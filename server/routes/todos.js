@@ -69,8 +69,8 @@ async function getList(req, res, next) {
     let list;
     try {
         list = await List.find({ slug: req.params.slug });
-        if(list == null) {
-            return res.status(404).json({ message: "List could not be found" });
+        if(list == null || list.length == 0) {
+            return res.status(404).json({ message: "List could not be found", status: 404 });
         } 
     } catch(err) {
         return res.status(500).json({ message: err.message })
