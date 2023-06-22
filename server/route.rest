@@ -1,0 +1,24 @@
+# GET http://127.0.0.1:8000/todos/
+
+# POST http://127.0.0.1:8000/todos
+# Content-Type: application/json
+
+# {
+#     "head": "do the recipe",
+#     "description": "description for brief list",
+#     "list": ["element1", "element2"]
+# }
+
+# GET http://127.0.0.1:8000/todos/649432a3eb15699a2e066483
+
+# DELETE http://127.0.0.1:8000/todos/o2b5m3dz
+
+# PATCH http://127.0.0.1:8000/todos/lDHcFnwH
+# Content-Type: application/json
+
+# {
+#     "head": "my new perfect header by ZEYNAL MARDANLI",
+#     "description": "Zeynal made this description true"
+# }
+
+GET http://127.0.0.1:8000/todos/KdCr5hAn
