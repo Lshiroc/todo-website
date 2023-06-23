@@ -1,11 +1,27 @@
 import style from './home.module.scss';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, createElement } from 'react';
 
 export default function Home() {
     const [data, setData] = useState([]);
     const [currentList, setCurrentList] = useState("");
     const [showList, setShowList] = useState({list: []});
+    const [currentContextMenu, setCurrentContextMenu] = useState("");
+    const [currentItem, setCurrentItem] = useState({slug: "", context: ""});
     const input = useRef();
+    const editInput = createElement(
+        "input",
+        {
+            className: style.editInput,
+            onKeyDown: (e) => {
+                if(e.key == "Enter") {
+                    saveEditedText(e);
+                }
+            },
+            onChange: () => {},
+            autoFocus: true,
+            defaultValue: currentItem.context
+        }
+    )
 
     const saveList = () => {
         const saveBody = {
@@ -31,6 +47,35 @@ export default function Home() {
             .catch(err => console.error(err));
 
         input.current.value = "";
+    }
+
+    function saveEditedText(e) {
+        let itemsTemp = showList.list;
+        itemsTemp.map((item) => {
+            if(item.slug == currentItem.slug) {
+                item.text = e.target.value.trim();
+            }
+        })
+
+        const newBody = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ...showList,
+                list: [
+                    ...itemsTemp
+                ]
+            })
+        }
+
+        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
+            .then(resp => resp.json())
+            .then(data => console.log(data))
+            .catch(err => console.error(err));
+
+        setCurrentItem("");
     }
 
     // Creating slug
@@ -127,6 +172,10 @@ export default function Home() {
             .then(resp => resp.json())
             .then(data => setData(data))
             .catch(err => console.error(err));
+
+        window.addEventListener("click", () => {
+            setCurrentContextMenu("");
+        })
     }, [])
 
     useEffect(() => {
@@ -160,15 +209,20 @@ export default function Home() {
                             {
                                 showList?.list.map((item, index) => (
                                     <div key={index} className={style.item}>
-                                        <input type="checkbox" slug={item.slug} defaultChecked={item.done} onChange={(e) => updateDone(e)} />
-                                        <p className={style.text}>{item.text}</p>
+                                        <div className={`${style.itemContent} ${currentItem.slug == item.slug && style.editVersion}`}>
+                                            <input type="checkbox" id={item.slug} slug={item.slug} defaultChecked={item.done} onChange={(e) => updateDone(e)} />
+                                            <label className={style.text} htmlFor={item.slug}>{item.text}</label>
+                                            {currentItem.slug == item.slug && editInput}
+                                        </div>
+                                        <div className={style.moreContainer}>
+                                            <div className={style.moreBtn} onClick={(e) => {e.stopPropagation(); currentContextMenu == item.slug ? setCurrentContextMenu("") : setCurrentContextMenu(item.slug)}}>more</div>
+                                            <div className={`${style.contextMenu} ${currentContextMenu == item.slug && style.open}`} onClick={(e) => e.stopPropagation()}>
+                                                <div className={style.option} onClick={() => {setCurrentItem({slug: item.slug, context: item.text}); setCurrentContextMenu("")}}>edit</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 ))
                             }
-                            {/* <div className={style.item}>
-                                <input type="checkbox" />
-                                <p className={style.text}>Recipe 1</p>
-                            </div> */}
                         </div>
                         <div className={style.addItem}>
                             <input type="text" ref={input} slug="d23FD67s" placeholder="I'll shave my head off" onKeyDown={(e) => {e.key == "Enter" && addText(e)}} />
