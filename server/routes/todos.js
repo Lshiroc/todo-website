@@ -42,20 +42,26 @@ router.post('/', async (req, res) => {
 
 // Deleting a List
 router.delete("/:slug", async (req, res) => {
-        console.log("lol");
     try {
         await List.deleteOne({ slug: req.params.slug });
         res.json({ message: "List deleted successfully" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-
 })
 
 // Updating List
-router.patch("/:slug", async (req, res) => {
-    let newVersion = {...req.body, moderationDate: Date.now()};
+router.patch("/:slug", getList, async (req, res) => {
+    console.log("-> ", req.body.list);
+    let newBody = {
+        head: req.body.head,
+        description: req.body.description,
+        list: [
+            ...req.body.list
+        ],
+    }
 
+    let newVersion = {...req.body, moderationDate: Date.now()};
     try {
         const updatedList = await List.findOneAndUpdate({ slug: req.params.slug }, newVersion);
         res.json(updatedList);
@@ -93,7 +99,7 @@ async function createSlug(n) {
         return newSlug;
     }
     
-    return createSlug();
+    return createSlug(n);
 }
 
 module.exports = router;
