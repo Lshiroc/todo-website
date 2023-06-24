@@ -110,6 +110,25 @@
             }
         }
 
+        // Right-click context menu
+        .contextMenu {
+            width: 100px;
+            background-color: #fae4e4;
+            border: 1px solid black;
+            border-radius: 5px;
+            position: absolute;
+            z-index: 1;
+            display: none;
+
+            .option {
+                padding: 5px 10px;
+            }
+
+            &.open {
+                display: block;
+            }
+        }
+
         .addItem {
             padding: 2px;
             // border-radius: 5px;
