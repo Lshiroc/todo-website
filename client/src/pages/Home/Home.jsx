@@ -202,7 +202,7 @@ export default function Home() {
             .catch(err => console.error(err));
 
         window.addEventListener("click", () => {
-            setCurrentItem("");
+            setCurrentItem({x: null, y: null, slug: "", context: "", operation: null, open: false});
         })
     }, [])
 
@@ -236,7 +236,7 @@ export default function Home() {
                         <div className={style.items}>
                             {
                                 showList?.list.map((item, index) => (
-                                    <div key={index} className={style.item} onContextMenu={(e) => {e.preventDefault(); setCurrentItem({x: e.pageX, y: e.pageY, slug: item.slug, context: item.text, operation: null, open: true})}} onClick={(e) => e.stopPropagation()}>
+                                    <div key={index} className={style.item} onContextMenu={(e) => {e.preventDefault(); setCurrentItem({x: e.pageX, y: e.pageY, slug: item.slug, context: item.text, operation: null, open: true})}}>
                                         <div className={`${style.itemContent} ${currentItem.operation == "edit" && currentItem.slug == item.slug && style.editVersion}`}>
                                             <input type="checkbox" id={item.slug} slug={item.slug} defaultChecked={item.done} onChange={(e) => updateDone(e)} />
                                             <label className={style.text} htmlFor={item.slug}>{item.text}</label>
@@ -253,6 +253,11 @@ export default function Home() {
                                     </div>
                                 ))
                             }
+                        </div>
+                        <div className={`${style.contextMenu} ${currentItem.x != null && currentItem.open && style.open}`} style={{top: currentItem.y, left: currentItem.x}} onClick={(e) => e.stopPropagation()}>
+                            <div className={style.option} onClick={() => {setCurrentItem({...currentItem, slug: currentItem.slug, context: currentItem.context, operation: "edit", open: false}); setCurrentContextMenu("")}}>edit</div>
+                            <div className={style.option} onClick={() => {navigator.clipboard.writeText(currentItem.context); setCurrentContextMenu(""); setCurrentItem({x: null, y: null, slug: "", context: "", operation: null, open: false})}}>copy</div>
+                            <div className={style.option} onClick={() => {deleteItem(currentItem.slug); setCurrentContextMenu("")}}>delete</div>
                         </div>
                         <div className={style.addItem}>
                             <input type="text" ref={input} slug="d23FD67s" placeholder="I'll shave my head off" onKeyDown={(e) => {e.key == "Enter" && addText(e)}} />
