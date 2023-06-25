@@ -1,6 +1,19 @@
 import style from './home.module.scss';
 import { useState, useEffect, useRef, createElement } from 'react';
 import ListItem from './../../components/ListItem/ListItem.jsx';
+import {
+    DndContext,
+    closestCenter,
+    useSensors,
+    PointerSensor,
+    useSensor
+} from "@dnd-kit/core";
+
+import {
+    arrayMove,
+    SortableContext,
+    verticalListSortingStrategy
+} from '@dnd-kit/sortable';
 
 export default function Home() {
     const [data, setData] = useState([]);
@@ -9,91 +22,16 @@ export default function Home() {
     const [currentItem, setCurrentItem] = useState({slug: "", open: false});
     const input = useRef();
 
+    // Settings to make DND-kit clickable
+    const sensors = useSensors(
+    useSensor(PointerSensor, {
+        activationConstraint: {
+            distance: 8,
+        },
+      })
+    )
 
-    const saveList = () => {
-        const saveBody = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                head: showList.head,
-                description: showList.description,
-                list: [
-                    ...showList.list,
-                    {
-                        text: showList.list
-                    }
-                ]
-            })
-        }
-
-        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, saveBody)
-            .then(resp => resp.json())
-            .then(data => console.log(data))
-            .catch(err => console.error(err));
-
-        input.current.value = "";
-    }
-
-    function saveEditedText(e) {
-        let itemsTemp = showList.list;
-        itemsTemp.map((item) => {
-            if(item.slug == currentItem.slug) {
-                item.text = e.target.value.trim();
-            }
-        })
-
-        const newBody = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                ...showList,
-                list: [
-                    ...itemsTemp
-                ]
-            })
-        }
-
-        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
-            .then(resp => resp.json())
-            .then(data => console.log(data))
-            .catch(err => console.error(err));
-
-        setCurrentItem("");
-    }
-
-    function deleteItem (itemSlug) {
-        let tempItems = showList.list.filter(item => item.slug != itemSlug);
-        const newBody = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                ...showList,
-                list: [
-                    ...tempItems
-                ]
-            })
-        }
-
-        setShowList({
-            ...showList,
-            list: [
-                ...tempItems
-            ]
-        })
-
-        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
-            .then(resp => resp.json())
-            .then(data => console.log(data))
-            .catch(err => console.error(err));
-    }   
-
-    // Creating slug
+    // Function for creating unique slug
     function createSlug(n) {
         const chars = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, "q", "Q", "w", "W", "e", "E", "r", "R", "t", "T", "y", "Y", "u", "U", "i", "I", "o", "O", "p", "P", "a", "A", "s", "S", "d", "D", "f", "F", "g", "G", "h", "H", "j", "J", "k", "K", "l", "L", "z", 'Z', "x", "X", "c", "C", "v", "V", "b", "B", "n", "N", "m", "M"];
         let newSlug = "";
@@ -109,6 +47,7 @@ export default function Home() {
         return createSlug(n);
     }
 
+    // Function to add new item to according list
     const addText = (e) => {
         const newBody = {
             method: "PATCH", 
@@ -144,44 +83,7 @@ export default function Home() {
         input.current.value = "";
     }
 
-    const updateDone = (e) => {
-        const slug = e.target.getAttribute("slug");
-        let itemsTemp = showList.list;
-        
-        itemsTemp.map((item) => {
-            if(item.slug == slug) {
-                item.done = e.target.checked;
-            }
-        })
-
-        const newBody = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                head: showList.head,
-                description: showList.description,
-                list: [
-                    ...itemsTemp
-                ]
-            })
-        }
-
-        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
-            .then(resp => resp.json())
-            .then(newdata => console.log(newdata))
-            .catch(err => console.error(err));
-
-        setShowList({
-            ...showList,
-            list: [
-                ...itemsTemp
-            ]
-        })
-
-    }
-
+    // Initial List fetch on page load
     useEffect(() => {
         fetch(`http://127.0.0.1:8000/todos`)
             .then(resp => resp.json())
@@ -189,7 +91,7 @@ export default function Home() {
             .catch(err => console.error(err));
 
         window.addEventListener("click", () => {
-            setCurrentItem({x: null, y: null, slug: "", context: "", operation: null, open: false});
+            setCurrentItem({slug: "", open: false});
         })
     }, [])
 
@@ -202,8 +104,65 @@ export default function Home() {
         }
     }, [currentList])
 
-    function onClick() {
-        console.log("dsdssdsdd2");
+    /*
+        Drag event function to keep track of 
+        items which will be changed via arrayMove()
+        and will be send to API, to update list
+    */
+    function handleDragEnd(e) {
+        /* 
+        active - the item we are planning to change
+           over - the item we want change places with 
+        */
+        const {active, over} = e;
+
+        if(active.id !== over.id) {
+            setShowList((items) => {
+                let activeIndex;
+                let overIndex;
+                let index = 0;
+                
+                // Getting indexes of active and over to use in arrayMove()
+                items.list.map((item) => {
+                    if(item.slug == active.id) {
+                        activeIndex = index;
+                    } else if(item.slug == over.id) {
+                        overIndex = index;
+                    }
+                    index++;
+                });
+
+                // Saving new version of list to APi
+                const saveBody = {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        head: showList.head,
+                        description: showList.description,
+                        list: [
+                            ...arrayMove(items.list, activeIndex, overIndex)
+                        ]
+                    })
+                }
+        
+                // Sending request
+                fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, saveBody)
+                    .then(resp => resp.json())
+                    .then(data => console.log(data))
+                    .catch(err => console.error(err));
+
+
+                // Returning new version to state itself
+                return {
+                    ...showList,
+                    list: [
+                        ...arrayMove(items.list, activeIndex, overIndex)
+                    ]
+                }
+            })
+        }
     }
 
     return (
@@ -212,6 +171,7 @@ export default function Home() {
                 <nav className={style.navbar}>
                     <div className={style.lists}>
                         <h1 className={style.sectionTitle}>Lists</h1>
+                        {/* Lists */}
                         <div className={style.content}>
                             {
                                 data && data.map((list, index) => (
@@ -225,19 +185,25 @@ export default function Home() {
                     <div className={style.list}>
                         <h1 className={style.title}>Recipes</h1>
                         <div className={style.items}>
-                            {
-                                showList?.list.map((item, index) => (
-                                    <ListItem setCurrentItem={setCurrentItem} currentItem={currentItem} props={item} key={index} />
-                                ))
-                            }
+                            {/* Draggable Part with DND-Kit */}
+                            <DndContext
+                                collisionDetection={closestCenter}
+                                onDragEnd={handleDragEnd}
+                                sensors={sensors}
+                            >
+                                <SortableContext
+                                    items={showList.list}
+                                    strategy={verticalListSortingStrategy}
+                                >
+                                    {
+                                        showList?.list.map((item, index) => (
+                                            <ListItem setCurrentItem={setCurrentItem} currentItem={currentItem} props={item} showList={showList} setShowList={setShowList} key={index} />
+                                        ))
+                                    }
+                                </SortableContext>
+                            </DndContext>
+
                         </div>
-                        {/* <div className={`${style.contextMenu} ${currentItem.x != null && currentItem.open && style.open}`}
-                            style={{top: `${currentItem.y}px`, left: (window.innerWidth - currentItem.x) <= 100 ? "auto" : `${currentItem.x}px`, right: (window.innerWidth - currentItem.x) <= 100 ? 0 : `auto`}}
-                            onClick={(e) => e.stopPropagation()}> 
-                            <div className={style.option} onClick={() => {setCurrentItem({...currentItem, slug: currentItem.slug, context: currentItem.context, operation: "edit", open: false}); setCurrentContextMenu("")}}>edit</div>
-                            <div className={style.option} onClick={() => {navigator.clipboard.writeText(currentItem.context); setCurrentContextMenu(""); setCurrentItem({x: null, y: null, slug: "", context: "", operation: null, open: false})}}>copy</div>
-                            <div className={style.option} onClick={() => {deleteItem(currentItem.slug); setCurrentContextMenu("")}}>delete</div>
-                        </div> */}
                         <div className={style.addItem}>
                             <input type="text" ref={input} slug="d23FD67s" placeholder="I'll shave my head off" onKeyDown={(e) => {e.key == "Enter" && addText(e)}} />
                         </div>

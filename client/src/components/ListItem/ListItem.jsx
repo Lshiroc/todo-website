@@ -1,9 +1,12 @@
 import style from './listitem.module.scss';
 import { useState, useEffect, createElement } from 'react';
+import { useSortable } from "@dnd-kit/sortable";
+import {CSS} from "@dnd-kit/utilities";
 
-export default function ListItem({props, index, setCurrentItem, currentItem}) {
+
+export default function ListItem({props, index, setCurrentItem, currentItem, setShowList, showList}) {
     const [operation, setOperation] = useState("");
-    const [contextMenuOpen, setContextMenuOpen] = useState({open: false, mouseDependent: false})
+    const [contextMenu, setContextMenu] = useState({x: null, y: null });
     const editInput = createElement(
         "input",
         {
@@ -11,6 +14,7 @@ export default function ListItem({props, index, setCurrentItem, currentItem}) {
             onKeyDown: (e) => {
                 if(e.key == "Enter") {
                     saveEditedText(e);
+                    setOperation("");
                 }
             },
             onChange: () => {},
@@ -22,10 +26,27 @@ export default function ListItem({props, index, setCurrentItem, currentItem}) {
         }
     )
 
+
+    // Necessary tools for DND-kit
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition
+    } = useSortable({id: props.slug});
+
+    const style2 = {
+        transform: CSS.Transform.toString(transform),
+        transition
+    }
+
+
+    // Function to dave edited item text
     function saveEditedText(e) {
         let itemsTemp = showList.list;
         itemsTemp.map((item) => {
-            if(item.slug == currentItem.slug) {
+            if(item.slug == props.slug) {
                 item.text = e.target.value.trim();
             }
         })
@@ -43,6 +64,13 @@ export default function ListItem({props, index, setCurrentItem, currentItem}) {
             })
         }
 
+        setShowList({
+            ...showList,
+            list: [
+                ...itemsTemp
+            ]
+        })
+
         fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
             .then(data => console.log(data))
@@ -51,7 +79,8 @@ export default function ListItem({props, index, setCurrentItem, currentItem}) {
         setCurrentItem("");
     }
 
-    function deleteItem (itemSlug) {
+    // Delete item with according slug
+    function deleteItem(itemSlug) {
         let tempItems = showList.list.filter(item => item.slug != itemSlug);
         const newBody = {
             method: "PATCH",
@@ -79,6 +108,7 @@ export default function ListItem({props, index, setCurrentItem, currentItem}) {
             .catch(err => console.error(err));
     }   
 
+    // Update the done status of item
     const updateDone = (e) => {
         const slug = e.target.getAttribute("slug");
         let itemsTemp = showList.list;
@@ -117,6 +147,11 @@ export default function ListItem({props, index, setCurrentItem, currentItem}) {
 
     }
 
+    /* 
+        Setting a global event to close
+        context-menu or "more" menu when clicked
+        outside of menu frame
+    */
     useEffect(() => {
         window.addEventListener("click", (e) => {
             setCurrentItem({slug: "", open: false});
@@ -124,39 +159,21 @@ export default function ListItem({props, index, setCurrentItem, currentItem}) {
     }, [])
 
     return (
-        <div key={index} className={style.item}>
-            <div className={`${style.itemContent}`}>
-                <input type="checkbox" id={props.slug} slug={props.slug} defaultChecked={props.done} />
+        <div ref={setNodeRef} data-no-dnd="true" {...attributes} {...listeners} key={index} className={style.item} style={style2} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY}); setCurrentItem({slug: props.slug, open: true})}}>
+            <div className={`${style.itemContent} ${operation == "edit" && style.editVersion}`}>
+                <input type="checkbox" id={props.slug} slug={props.slug} checked={props.done} onChange={(e) => updateDone(e)} />
                 <label className={style.text} htmlFor={props.slug}>{props.text}</label>
                 {operation == "edit" && editInput}
             </div>
-            <div className={style.moreContainer}>
+            <div className={style.moreContainer} style={{position: contextMenu.x != null ? "unset" : "relative"}}>
                 {/* Toggling context-menu via a shared state between ListItem and Home */}
-                <div className={style.moreBtn} onClick={(e) => {e.stopPropagation(); setCurrentItem({slug: props.slug, open: currentItem.slug == props.slug && currentItem.open ? false : true});}}>more</div>
-                <div className={`${style.contextMenu} ${currentItem.slug == props.slug && currentItem.open && style.open}`} onClick={(e) => e.stopPropagation()}>
-                    <div className={style.option}>edit</div>
-                    <div className={style.option} onClick={() => {navigator.clipboard.writeText(props.text)}}>copy</div>
-                    <div className={style.option}>delete</div>
+                <div className={style.moreBtn} onClick={(e) => {e.stopPropagation(); setContextMenu({x: null, y: null}); setCurrentItem({slug: props.slug, open: currentItem.slug == props.slug && currentItem.open ? false : true});}}>more</div>
+                <div className={`${style.contextMenu} ${currentItem.slug == props.slug && currentItem.open && style.open}`} onClick={(e) => e.stopPropagation()} style={{top: contextMenu.y !== null ? contextMenu.y : "auto", left: contextMenu.x !== null ? contextMenu.x : "auto"}}>
+                    <div className={style.option} onClick={() => {setOperation("edit"); setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null})}}>edit</div>
+                    <div className={style.option} onClick={() => {navigator.clipboard.writeText(props.text); setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null})}}>copy</div>
+                    <div className={style.option} onClick={() => deleteItem(props.slug)}>delete</div>
                 </div>
             </div>
-
-                {/* <div key={index} className={style.item} onContextMenu={(e) => {e.preventDefault(); setCurrentItem({x: e.pageX, y: e.pageY, slug: item.slug, context: props.text, operation: null, open: true})}}>
-<div className={`${style.itemContent} ${currentItem.operation == "edit" && currentItem.slug == props.slug && style.editVersion}`}>
-    <input type="checkbox" id={props.slug} slug={props.slug} defaultChecked={item.done} onChange={(e) => updateDone(e)} />
-    <label className={style.text} htmlFor={props.slug}>{props.text}</label>
-    {currentItem.operation == "edit" && currentItem.slug == props.slug && editInput}
-</div>
-<div className={style.moreContainer}>
-    <div className={style.moreBtn} onClick={(e) => {e.stopPropagation(); currentItem.open ? setCurrentItem({x: null, y: null, slug: item.slug, context: item.text, operation: null, open: false}) : setCurrentItem({x: null, y: null, slug: item.slug, context: item.text, operation: null, open: true})}}>more</div>
-    <div className={`${style.contextMenu} ${currentItem.x == null && currentItem.open && currentItem.slug == props.slug && style.open}`} onClick={(e) => e.stopPropagation()}>
-        <div className={style.option} onClick={() => {setCurrentItem({...currentItem, slug: props.slug, context: props.text, operation: "edit", open: false}); setCurrentContextMenu("")}}>edit</div>
-        <div className={style.option} onClick={() => {navigator.clipboard.writeText(props.text); setCurrentContextMenu("")}}>copy</div>
-        <div className={style.option} onClick={() => {deleteItem(item.slug); setCurrentContextMenu("")}}>delete</div>
-    </div>
-</div>
-</div> */}
         </div>
-
-
     )
 }
