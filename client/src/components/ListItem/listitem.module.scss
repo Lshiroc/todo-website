@@ -1,0 +1,56 @@
+.item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .itemContent {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+
+        .text {
+            width: 100%;
+            margin-left: 10px;
+            font-size: 18px;
+        }
+        
+        .editInput {
+            width: 100%;
+            padding: 10px 15px;
+            // outline: none;
+            margin-left: 5px;
+            border-radius: 5px;
+            border: none;
+            font-size: 18px;
+        }
+
+        &.editVersion {
+            .text {
+                display: none;
+            }
+        }
+    }
+
+    .moreContainer {
+        position: relative;
+
+        .contextMenu {
+            width: 100px;
+            background-color: #FFF;
+            border: 1px solid black;
+            border-radius: 5px;
+            position: absolute;
+            right: 0;
+            z-index: 1;
+            display: none;
+
+            .option {
+                padding: 5px 10px;
+            }
+
+            &.open {
+                display: block;
+            }
+        }
+    }
+}

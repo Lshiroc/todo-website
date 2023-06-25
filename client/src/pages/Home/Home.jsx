@@ -1,27 +1,14 @@
 import style from './home.module.scss';
 import { useState, useEffect, useRef, createElement } from 'react';
+import ListItem from './../../components/ListItem/ListItem.jsx';
 
 export default function Home() {
     const [data, setData] = useState([]);
     const [currentList, setCurrentList] = useState("");
     const [showList, setShowList] = useState({list: []});
-    const [currentContextMenu, setCurrentContextMenu] = useState("");
-    const [currentItem, setCurrentItem] = useState({slug: "", text: ""});
+    const [currentItem, setCurrentItem] = useState({slug: "", open: false});
     const input = useRef();
-    const editInput = createElement(
-        "input",
-        {
-            className: style.editInput,
-            onKeyDown: (e) => {
-                if(e.key == "Enter") {
-                    saveEditedText(e);
-                }
-            },
-            onChange: () => {},
-            autoFocus: true,
-            defaultValue: currentItem.context
-        }
-    )
+
 
     const saveList = () => {
         const saveBody = {
@@ -215,6 +202,10 @@ export default function Home() {
         }
     }, [currentList])
 
+    function onClick() {
+        console.log("dsdssdsdd2");
+    }
+
     return (
         <>
             <main className={style.main}>
@@ -236,29 +227,17 @@ export default function Home() {
                         <div className={style.items}>
                             {
                                 showList?.list.map((item, index) => (
-                                    <div key={index} className={style.item} onContextMenu={(e) => {e.preventDefault(); setCurrentItem({x: e.pageX, y: e.pageY, slug: item.slug, context: item.text, operation: null, open: true})}}>
-                                        <div className={`${style.itemContent} ${currentItem.operation == "edit" && currentItem.slug == item.slug && style.editVersion}`}>
-                                            <input type="checkbox" id={item.slug} slug={item.slug} defaultChecked={item.done} onChange={(e) => updateDone(e)} />
-                                            <label className={style.text} htmlFor={item.slug}>{item.text}</label>
-                                            {currentItem.operation == "edit" && currentItem.slug == item.slug && editInput}
-                                        </div>
-                                        <div className={style.moreContainer}>
-                                            <div className={style.moreBtn} onClick={(e) => {e.stopPropagation(); currentItem.open ? setCurrentItem({x: null, y: null, slug: item.slug, context: item.text, operation: null, open: false}) : setCurrentItem({x: null, y: null, slug: item.slug, context: item.text, operation: null, open: true})}}>more</div>
-                                            <div className={`${style.contextMenu} ${currentItem.x == null && currentItem.open && currentItem.slug == item.slug && style.open}`} onClick={(e) => e.stopPropagation()}>
-                                                <div className={style.option} onClick={() => {setCurrentItem({...currentItem, slug: item.slug, context: item.text, operation: "edit", open: false}); setCurrentContextMenu("")}}>edit</div>
-                                                <div className={style.option} onClick={() => {navigator.clipboard.writeText(item.text); setCurrentContextMenu("")}}>copy</div>
-                                                <div className={style.option} onClick={() => {deleteItem(item.slug); setCurrentContextMenu("")}}>delete</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <ListItem setCurrentItem={setCurrentItem} currentItem={currentItem} props={item} key={index} />
                                 ))
                             }
                         </div>
-                        <div className={`${style.contextMenu} ${currentItem.x != null && currentItem.open && style.open}`} style={{top: currentItem.y, left: currentItem.x}} onClick={(e) => e.stopPropagation()}>
+                        {/* <div className={`${style.contextMenu} ${currentItem.x != null && currentItem.open && style.open}`}
+                            style={{top: `${currentItem.y}px`, left: (window.innerWidth - currentItem.x) <= 100 ? "auto" : `${currentItem.x}px`, right: (window.innerWidth - currentItem.x) <= 100 ? 0 : `auto`}}
+                            onClick={(e) => e.stopPropagation()}> 
                             <div className={style.option} onClick={() => {setCurrentItem({...currentItem, slug: currentItem.slug, context: currentItem.context, operation: "edit", open: false}); setCurrentContextMenu("")}}>edit</div>
                             <div className={style.option} onClick={() => {navigator.clipboard.writeText(currentItem.context); setCurrentContextMenu(""); setCurrentItem({x: null, y: null, slug: "", context: "", operation: null, open: false})}}>copy</div>
                             <div className={style.option} onClick={() => {deleteItem(currentItem.slug); setCurrentContextMenu("")}}>delete</div>
-                        </div>
+                        </div> */}
                         <div className={style.addItem}>
                             <input type="text" ref={input} slug="d23FD67s" placeholder="I'll shave my head off" onKeyDown={(e) => {e.key == "Enter" && addText(e)}} />
                         </div>
