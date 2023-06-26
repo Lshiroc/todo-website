@@ -13,6 +13,17 @@ router.get('/', async (req, res) => {
     }
 })
 
+// Getting List headers
+router.get('/heads', async (req, res) => {
+    let lists;
+    try {
+        lists = await List.find().select('slug head description');
+        res.status(200).json(lists);
+    } catch (err) {
+        res.status(500).json({message: err.message});
+    }
+})
+
 // Get List By SLUG
 router.get('/:slug', getList, async (req, res) => {
     try {
@@ -52,7 +63,6 @@ router.delete("/:slug", async (req, res) => {
 
 // Updating List
 router.patch("/:slug", getList, async (req, res) => {
-    console.log("-> ", req.body.list);
     let newBody = {
         head: req.body.head,
         description: req.body.description,
