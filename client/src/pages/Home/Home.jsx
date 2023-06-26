@@ -192,12 +192,12 @@ export default function Home() {
                                 sensors={sensors}
                             >
                                 <SortableContext
-                                    items={showList.list}
+                                    items={showList.list.map(item => item.slug)}
                                     strategy={verticalListSortingStrategy}
                                 >
                                     {
                                         showList?.list.map((item, index) => (
-                                            <ListItem setCurrentItem={setCurrentItem} currentItem={currentItem} props={item} showList={showList} setShowList={setShowList} key={index} />
+                                            <ListItem setCurrentItem={setCurrentItem} listSlug={showList?.slug} allData={data} currentItem={currentItem} props={item} showList={showList} setShowList={setShowList} key={index} />
                                         ))
                                     }
                                 </SortableContext>

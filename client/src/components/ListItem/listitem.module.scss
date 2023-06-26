@@ -50,6 +50,30 @@
 
             .option {
                 padding: 5px 10px;
+                position: relative;
+
+                &.openable:hover {
+                    .innerSelection {
+                        display: block;
+                    }
+                }
+
+                .innerSelection {
+                    width: 220px;
+                    border: 1px solid black;
+                    background-color: #FFF;
+                    position: absolute;
+                    transform: translateX(100%);
+                    right: 0;
+                    top: 0;
+                    display: none;
+
+                    &.leftVersion { 
+                        right: auto;
+                        left: 0;
+                        transform: translateX(-100%);
+                    }
+                }
             }
 
             &.open {
