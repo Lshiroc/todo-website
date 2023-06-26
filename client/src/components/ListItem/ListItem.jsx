@@ -2,8 +2,9 @@ import style from './listitem.module.scss';
 import { useState, useEffect, createElement } from 'react';
 import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
+import dragIcon from './../../assets/icons/drag-icon.svg';
 
-export default function ListItem({props, index, allData, listSlug, setCurrentItem, currentItem, setShowList, showList}) {
+export default function ListItem({props, allData, listSlug, setCurrentItem, currentItem, setShowList, showList, dndDisable}) {
     const [operation, setOperation] = useState("");
     const [contextMenu, setContextMenu] = useState({x: null, y: null });
     const editInput = createElement(
@@ -25,7 +26,6 @@ export default function ListItem({props, index, allData, listSlug, setCurrentIte
         }
     )
 
-
     // Necessary tools for DND-kit
     const {
         attributes,
@@ -33,7 +33,7 @@ export default function ListItem({props, index, allData, listSlug, setCurrentIte
         setNodeRef,
         transform,
         transition
-    } = useSortable({id: props.slug, disabled: true});
+    } = useSortable({id: props, disabled: dndDisable});
 
     const style2 = {
         transform: CSS.Transform.toString(transform),
@@ -201,13 +201,21 @@ export default function ListItem({props, index, allData, listSlug, setCurrentIte
             setCurrentItem({slug: "", open: false});
             setContextMenu({x: null, y: null});
         })
+
+        window.addEventListener("contextmenu", () => {
+            setCurrentItem({slug: "", open: false});
+            setContextMenu({x: null, y: null});
+        }, [])
     }, [])
 
     return (
-        <div ref={setNodeRef} data-no-dnd="true" {...attributes} {...listeners} key={index} className={style.item} style={style2} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY}); setCurrentItem({slug: props.slug, open: true})}}>
+        <div ref={setNodeRef} data-no-dnd="true" style={style2} className={style.item}  onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.pageX, y: e.pageY}); setCurrentItem({slug: props.slug, open: true})}}>
+            <button {...attributes} {...listeners} className={`${style.dragBtn} ${!dndDisable && style.active}`}>
+                <img src={dragIcon} alt="Drag" draggable="false" />
+            </button>
             <div className={`${style.itemContent} ${operation == "edit" && style.editVersion}`}>
-                <input type="checkbox" id={props.slug} slug={props.slug} checked={props.done} onChange={(e) => updateDone(e)} />
-                <label className={style.text} htmlFor={props.slug}>{props.text}</label>
+                <input type="checkbox" id={props.slug} slug={props.slug} checked={props.done} style={{display: dndDisable ? "block" : "none"}} onChange={(e) => {updateDone(e)}} />
+                <label className={style.text} htmlFor={dndDisable ? props.slug : 'none'} onClick={(e) => {e.preventDefault()}} >{props.text}</label>
                 {operation == "edit" && editInput}
             </div>
             <div className={style.moreContainer} style={{position: contextMenu.x != null ? "unset" : "relative"}}>

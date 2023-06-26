@@ -2,7 +2,23 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    
+
+    .dragBtn {
+        padding: 5px;
+        user-select: none;
+        // border: none;
+        outline: none;
+        display: none;
+
+        img {
+            width: 12px;
+        }
+
+        &.active {
+            display: block;
+        }
+    }
+
     .itemContent {
         display: flex;
         align-items: center;

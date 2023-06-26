@@ -20,6 +20,7 @@ export default function Home() {
     const [currentList, setCurrentList] = useState("");
     const [showList, setShowList] = useState({list: []});
     const [currentItem, setCurrentItem] = useState({slug: "", open: false});
+    const [dndDisable, setDndDisable] = useState(true);
     const input = useRef();
 
     // Settings to make DND-kit clickable
@@ -120,12 +121,12 @@ export default function Home() {
                 let activeIndex;
                 let overIndex;
                 let index = 0;
-                
+
                 // Getting indexes of active and over to use in arrayMove()
                 items.list.map((item) => {
-                    if(item.slug == active.id) {
+                    if(item == active.id) {
                         activeIndex = index;
-                    } else if(item.slug == over.id) {
+                    } else if(item == over.id) {
                         overIndex = index;
                     }
                     index++;
@@ -145,7 +146,7 @@ export default function Home() {
                         ]
                     })
                 }
-        
+
                 // Sending request
                 fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, saveBody)
                     .then(resp => resp.json())
@@ -157,7 +158,7 @@ export default function Home() {
                 return {
                     ...showList,
                     list: [
-                        ...arrayMove(items.list, activeIndex, overIndex)
+                        ...JSON.parse(saveBody.body).list
                     ]
                 }
             })
@@ -183,6 +184,7 @@ export default function Home() {
                 <section className={style.listView}>
                     <div className={style.list}>
                         <h1 className={style.title}>Recipes</h1>
+                        <p onClick={() => setDndDisable(prevVal => !prevVal)}>activate dnd</p>
                         <div className={style.items}>
                             {/* Draggable Part with DND-Kit */}
                             <DndContext
@@ -191,12 +193,14 @@ export default function Home() {
                                 sensors={sensors}
                             >
                                 <SortableContext
-                                    items={showList?.list.map(item => item.slug)}
+                                    items={showList.list}
                                     strategy={verticalListSortingStrategy}
+                                    useDragOverlay={false}
+                                    
                                 >
                                     {
-                                        showList?.list.map((item, index) => (
-                                            <ListItem setCurrentItem={setCurrentItem} listSlug={showList?.slug} allData={data} currentItem={currentItem} props={item} showList={showList} setShowList={setShowList} key={index} />
+                                        showList?.list.map((item) => (
+                                            <ListItem key={item.slug} setCurrentItem={setCurrentItem} dndDisable={dndDisable} listSlug={showList?.slug} allData={data} currentItem={currentItem} props={item} showList={showList} setShowList={setShowList} />
                                         ))
                                     }
                                 </SortableContext>
