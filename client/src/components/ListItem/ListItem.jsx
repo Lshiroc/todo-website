@@ -162,9 +162,12 @@ export default function ListItem({props, index, allData, listSlug, setCurrentIte
     }
 
     // Function to move the item to another list
-    const moveItem = (list, listBody) => {
+    const moveItem = async (list) => {
+        const resp = await fetch(`http://127.0.0.1:8000/todos/${list}`);
+        const listBody = await resp.json();
+
         let tempItem = props;
-        tempItem.slug = createSlug(8, listBody.list);
+        tempItem.slug = createSlug(8, await listBody[0].list);
         
         const newBody = {
             method: "PATCH",
@@ -172,14 +175,13 @@ export default function ListItem({props, index, allData, listSlug, setCurrentIte
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                ...listBody,
+                ...listBody[0],
                 list: [
-                    ...listBody.list,
+                    ...listBody[0].list,
                     tempItem
                 ]
             })
         }
-
 
         fetch(`http://127.0.0.1:8000/todos/${list}`, newBody)
             .then(resp => resp.json())
@@ -187,7 +189,6 @@ export default function ListItem({props, index, allData, listSlug, setCurrentIte
             .catch(err => console.error(err));
 
         deleteItem(props.slug);
-
     }
 
     /* 
@@ -221,7 +222,7 @@ export default function ListItem({props, index, allData, listSlug, setCurrentIte
                         <div className={`${style.innerSelection} ${!contextMenu.x ? style.leftVersion : window.innerWidth - contextMenu.x <= 400 && style.leftVersion}`}>
                             {
                                 allData.map((list, index) => (
-                                    list.slug !== listSlug && <div key={index} className={style.option} onClick={() => {moveItem(list.slug, list)}}>{list.head}</div>
+                                    list.slug !== listSlug && <div key={index} className={style.option} onClick={() => {moveItem(list.slug)}}>{list.head}</div>
                                 ))
                             }
                         </div>

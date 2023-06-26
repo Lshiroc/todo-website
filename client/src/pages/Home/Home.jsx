@@ -83,9 +83,17 @@ export default function Home() {
         input.current.value = "";
     }
 
+    // Fetch List when demanded
+    const fetchList = (listSlug) => {
+        fetch(`http://127.0.0.1:8000/todos/${listSlug}`)
+            .then(resp => resp.json())
+            .then(data => setShowList(data[0]))
+            .catch(err => console.error(err));
+    }
+
     // Initial List fetch on page load
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/todos`)
+        fetch(`http://127.0.0.1:8000/todos/heads`)
             .then(resp => resp.json())
             .then(data => setData(data))
             .catch(err => console.error(err));
@@ -94,15 +102,6 @@ export default function Home() {
             setCurrentItem({slug: "", open: false});
         })
     }, [])
-
-    useEffect(() => {
-        if(data?.length > 0) {
-            const list = data.filter(list => list.slug == currentList);
-            if(list) {
-                setShowList(list[0]);
-            }
-        }
-    }, [currentList])
 
     /*
         Drag event function to keep track of 
@@ -175,7 +174,7 @@ export default function Home() {
                         <div className={style.content}>
                             {
                                 data && data.map((list, index) => (
-                                    <div key={index} onClick={() => setCurrentList(list.slug)} className={style.list}>{list.head}</div>
+                                    <div key={index} onClick={() => {fetchList(list.slug); setCurrentList(list.slug)}} className={style.list}>{list.head}</div>
                                 ))
                             }
                         </div>
@@ -192,7 +191,7 @@ export default function Home() {
                                 sensors={sensors}
                             >
                                 <SortableContext
-                                    items={showList.list.map(item => item.slug)}
+                                    items={showList?.list.map(item => item.slug)}
                                     strategy={verticalListSortingStrategy}
                                 >
                                     {
