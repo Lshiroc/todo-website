@@ -66,9 +66,10 @@ router.patch("/:slug", getList, async (req, res) => {
     let newBody = {
         head: req.body.head,
         description: req.body.description,
-        list: [
-            ...req.body.list
-        ],
+    }
+
+    if(req.body.list) {
+        newBody.list = [ ...req.body.list ];
     }
 
     let newVersion = {...req.body, moderationDate: Date.now()};
