@@ -269,7 +269,7 @@ export default function Home() {
     }
 
     const handleContextClick = () => {
-        if(contextMenu.open) {
+        if(contextMenu.open || currentItem.slug != "" || currentItem.open) {
             setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
             setCurrentItem({slug: "", open: false});
         }
