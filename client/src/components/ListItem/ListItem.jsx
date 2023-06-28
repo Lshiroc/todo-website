@@ -94,7 +94,7 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};
-        newData[props.slug] = {...showList, list: [...tempItems]}
+        newData[showList.slug] = {...showList, list: [...tempItems]}
         setSlowCollectedData(newData);
 
         setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
@@ -159,12 +159,18 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
             })
         }
 
+        let newData = slowCollectedData;
+        newData[list] = JSON.parse(newBody.body);
+        setSlowCollectedData(newData);
+
         fetch(`http://127.0.0.1:8000/todos/${list}`, newBody)
             .then(resp => resp.json())
             .then(data => console.log(data))
             .catch(err => console.error(err));
 
         deleteItem(props.slug);
+        
+        console.log("moved item and cached");
     }
 
     /* 

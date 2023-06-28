@@ -58,12 +58,6 @@
             padding: 5px 10px;
             position: relative;
 
-            &.openable:hover {
-                .innerSelection {
-                    display: block;
-                }
-            }
-
             .innerSelection {
                 width: 220px;
                 border: 1px solid black;
@@ -78,6 +72,12 @@
                     right: auto;
                     left: 0;
                     transform: translateX(-100%);
+                }
+            }
+
+            &.openable:hover {
+                .innerSelection {
+                    display: block;
                 }
             }
         }

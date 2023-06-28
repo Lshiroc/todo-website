@@ -92,7 +92,6 @@ export default function Home() {
 
     // Fetch List when demanded
     const fetchList = (listSlug) => {
-        const d = {};
         if(Object.hasOwn(slowCollectedData, listSlug)) {
             console.log("cached");
             setShowList(slowCollectedData[listSlug]);
@@ -174,6 +173,79 @@ export default function Home() {
             .then(resp => resp.json())
             .then(data => fetchHeads())
             .catch(err => console.error(err));
+    }
+
+    // Transfer List to another List
+    const transferListTo = async (fromSlug, toSlug) => {
+        // Fetching the Lists if they are not in the cache
+        const fetchAll = async () => {
+            let needToFetch = [];
+            let tempData = slowCollectedData;
+
+            if(!slowCollectedData[fromSlug]) {
+                needToFetch.push(`http://127.0.0.1:8000/todos/${fromSlug}`);
+            }
+            if(!slowCollectedData[toSlug]) {
+                needToFetch.push(`http://127.0.0.1:8000/todos/${toSlug}`);
+            }
+
+            try {
+                let res = await Promise.all(needToFetch.map((e) => fetch(e)));
+                let resJson = await Promise.all(res.map((e) => e.json()));
+                resJson.map((list) => {
+                    if(list[0].slug == fromSlug) {
+                        tempData[fromSlug] = list[0];
+                    }
+                    if(list[0].slug == toSlug) {
+                        tempData[toSlug] = list[0];
+                    }
+                })
+                return tempData;
+            } catch(err) {
+                console.error(err);
+            }
+
+            return false;
+        }
+
+        // Editing and saving the final version, and caching
+        const transfer = async (data) => {
+            let tempData = await data;
+            let tempItems = await tempData[toSlug];
+            let transferedItems = await tempData[fromSlug];
+
+            if(tempItems.list.length > 0) {
+                tempItems.list = [...tempItems.list, ...transferedItems.list];
+            } else {
+                tempItems.list = [...transferedItems.list];
+            }
+
+            let newBody = {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ...tempItems
+                })
+            }
+
+            let newData = tempData;
+            newData[toSlug] = tempItems;
+            setShowList(newData[toSlug]);
+            setSlowCollectedData(newData);
+
+            fetch(`http://127.0.0.1:8000/todos/${toSlug}`, newBody)
+                .then(resp => resp.json())
+                .then(data => console.log(data))
+                .catch(err => console.error(err));
+
+            deleteList(fromSlug);
+            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
+            console.log("transferred and cached");
+        }
+
+        transfer(await fetchAll());
     }
 
     // Initial List fetch on page load
@@ -292,6 +364,16 @@ export default function Home() {
                         <div className={`${style.contextMenu} ${contextMenu.open && style.open}`} onClick={(e) => e.stopPropagation()} style={{top: contextMenu.y ? contextMenu.y : 'auto', left: contextMenu.x ? contextMenu.x : 'auto'}}>
                             <div className={style.option} onClick={() => {deleteList(contextMenu.slug); setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null})}}>delete</div>
                             <div className={style.option} onClick={() => {setContextMenu({x: null, y: null, slug: contextMenu.slug, element: "list", open: false, operation: "edit"})}}>edit</div>
+                            <div className={`${style.option} ${style.openable}`}>
+                                <p>transfer to</p>
+                                <div className={`${style.innerSelection}`}>
+                                    {
+                                        data.map((list, index) => (
+                                            list.slug !== contextMenu.slug && <div key={index} className={style.option} onClick={() => {transferListTo(contextMenu.slug, list.slug)}}>{list.head}</div>
+                                        ))
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </nav>
