@@ -182,23 +182,16 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
         const handleContext = () => {
             if(contextMenu.open) {
                 setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
-            }
-        }
-
-        const handleCurrentItem = () => {
-            if(currentItem.open || currentItem.slug != "") {
                 setCurrentItem({slug: "", open: false});
             }
         }
 
-        window.addEventListener("click", handleContext)
-        window.addEventListener("click", handleCurrentItem)
-        window.addEventListener("contextmenu", handleContext)
-        
+        window.addEventListener("click", handleContext);
+        window.addEventListener("contextmenu", handleContext);
+
         return () => {
-            window.removeEventListener('click', handleContext);
-            window.removeEventListener("click", handleCurrentItem);
-            window.removeEventListener('contextmenu', handleContext);
+            window.removeEventListener("click", handleContext);
+            window.removeEventListener("contextmenu", handleContext);
         }
     }, [contextMenu, currentItem])
 

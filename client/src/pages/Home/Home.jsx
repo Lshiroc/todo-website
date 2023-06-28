@@ -258,29 +258,38 @@ export default function Home() {
         context-menu or "more" menu when clicked
         outside of menu frame
     */
+   const handleContext = (e) => {
+        let listSlug = e.target.getAttribute("slug");
+        if(listSlug) {
+            setContextMenu({x: e.pageX, y: e.pageY, slug: listSlug, open: true, operation: null});
+        } else {
+            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
+            setCurrentItem({slug: "", open: false});
+        }
+    }
+
+    const handleContextClick = () => {
+        if(contextMenu.open) {
+            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
+            setCurrentItem({slug: "", open: false});
+        }
+    }
     useEffect(() => {
-        const handleContext = () => {
-            if(contextMenu.open) {
-                setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
-            }
-        }
+        window.addEventListener("click", handleContextClick);
+        window.addEventListener("contextmenu", handleContext);
 
-        const handleCurrentItem = () => {
-            if(currentItem.open || currentItem.slug != "") {
-                setCurrentItem({slug: "", open: false});
-            }
-        }
-
-        window.addEventListener("click", handleContext)
-        window.addEventListener("click", handleCurrentItem)
-        window.addEventListener("contextmenu", handleContext)
-        
         return () => {
-            window.removeEventListener('click', handleContext);
-            window.removeEventListener("click", handleCurrentItem);
-            window.removeEventListener('contextmenu', handleContext);
+            window.removeEventListener("click", handleContextClick);
+            window.removeEventListener("contextmenu", handleContext);
         }
     }, [contextMenu, currentItem])
+
+    useEffect(() => {
+        if(currentItem.open || currentItem.slug != "") {
+            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
+        }
+    }, [currentItem])
+
 
     /*
         Drag event function to keep track of 
@@ -356,7 +365,7 @@ export default function Home() {
                                     contextMenu.slug == list.slug && contextMenu.element == "list" && contextMenu.operation == "edit" ?
                                     <input key={index} className={style.editInput} defaultValue={list.head} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedList(e, list);}} />
                                     :
-                                    <div key={index} onClick={() => fetchList(list.slug)} onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, element: "list", open: true, operation: null})}} className={style.list}>{list.head}</div>                                    
+                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={style.list}>{list.head}</div>                                    
                                 ))
                             }
                             <div className={style.addListBtn} onClick={() => createNewList()}>Add List</div>
