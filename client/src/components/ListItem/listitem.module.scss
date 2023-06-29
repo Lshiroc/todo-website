@@ -24,6 +24,41 @@
         align-items: center;
         flex-grow: 1;
 
+        .customCheckBox {
+            position: relative;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgb(172, 172, 172);
+
+            .checkmark {
+                width: 25px;
+            }
+
+            .maru, .batsu, .sankaku {
+                display: none;
+            }
+
+            &.done {
+                .maru {
+                    display: block;
+                }
+            }
+
+            &.undone {
+                .batsu {
+                    display: block;
+                }
+            }
+
+            &.pending {
+                .sankaku {
+                    display: block;
+                }
+            }
+        }
+
+
         .text {
             width: 100%;
             margin-left: 10px;

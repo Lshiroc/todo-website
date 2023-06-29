@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import dragIcon from './../../assets/icons/drag-icon.svg';
+import maruIcon from './../../assets/icons/maru.svg';
+import batsuIcon from './../../assets/icons/batsu.svg';
+import sankakuIcon from './../../assets/icons/sankaku.svg';
+
 
 export default function ListItem({props, allData, listSlug, setSlowCollectedData, slowCollectedData, setCurrentItem, currentItem, setShowList, showList, dndDisable}) {
     const [contextMenu, setContextMenu] = useState({x: null, y: null, slug: '', open: false, operation: null});
@@ -102,13 +106,27 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
     }   
 
     // Update the done status of item
-    const updateDone = (e) => {
-        const slug = e.target.getAttribute("slug");
+    const updateStatus = (status) => {
         let itemsTemp = showList.list;
-        
+        let newStatus;
+
+        switch(status) {
+            case "undone":
+                newStatus = "pending";
+                break;
+            case "pending":
+                newStatus = "done";
+                break;
+            case "done":
+                newStatus = "undone";
+                break;
+            default: 
+                newStatus = "ERROR";
+        }
+
         itemsTemp.map((item) => {
-            if(item.slug == slug) {
-                item.done = e.target.checked;
+            if(item.slug == props.slug) {
+                item.status = newStatus;
             }
         })
 
@@ -134,7 +152,7 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
         let newData = {...slowCollectedData};
         newData[showList.slug] = {...showList, list: [...itemsTemp]};
         setSlowCollectedData(newData);
-        console.log("Changed Done and Cached");
+        console.log("Changed Status and Cached");
     }
 
     // Function to move the item to another list
@@ -194,6 +212,7 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
             window.removeEventListener("contextmenu", handleContext);
         }
     }, [contextMenu, currentItem])
+    console.log(props.status)
 
     return (
         <div ref={setNodeRef} data-no-dnd="true" style={style2} className={style.item} onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.pageX, y: e.pageY, slug: props.slug, open: true, operation: null}); setCurrentItem({slug: props.slug, open: true})}}>
@@ -201,7 +220,12 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
                 <img src={dragIcon} alt="Drag" draggable="false" />
             </button>
             <div className={`${style.itemContent} ${contextMenu.operation == "edit" && contextMenu.slug == props.slug && style.editVersion}`}>
-                <input type="checkbox" id={props.slug} slug={props.slug} checked={props.done} style={{display: dndDisable ? "block" : "none"}} onChange={(e) => {updateDone(e)}} />
+                <span className={`${style.customCheckBox} ${style[props.status]}`} onClick={() => updateStatus(props.status)}>
+                    <img src={maruIcon} alt="Done" className={`${style.checkmark} ${style.maru}`} />
+                    <img src={batsuIcon} alt="Undone" className={`${style.checkmark} ${style.batsu}`} />
+                    <img src={sankakuIcon} alt="Pending" className={`${style.checkmark} ${style.sankaku}`} />
+                    {/* <input type="checkbox" id={props.slug} slug={props.slug} checked={props.done} style={{display: dndDisable ? "block" : "none"}} onChange={(e) => {updateStatus(e)}} /> */}
+                </span>
                 <label className={style.text} htmlFor={dndDisable ? props.slug : 'none'} onClick={(e) => {e.preventDefault()}} >{props.text}</label>
                 {contextMenu.operation == "edit" && contextMenu.slug == props.slug && <input className={style.editInput} defaultValue={props.text} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedText(e);}} />}
             </div>

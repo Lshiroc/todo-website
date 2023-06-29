@@ -70,7 +70,7 @@ export default function Home() {
                     ...showList.list,
                     {
                         text: e.target.value.trim(),
-                        done: false,
+                        status: "undone",
                         slug: createSlug(8)
                     }
                 ]
