@@ -103,7 +103,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};
-        newData[showList.slug] = {...showList, list: [...tempItems]}
+        newData[showList.slug] = {...showList, list: [...tempItems], count: tempItems.length};
         setSlowCollectedData(newData);
 
         setContextMenu({x: null, y: null, slug: "", open: false, operation: null});

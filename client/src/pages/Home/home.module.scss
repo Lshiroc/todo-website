@@ -59,6 +59,9 @@
                 grid-column: 2 / 3;
                 grid-row: 1 / 2;
                 line-height: 18px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
 
             .description {
@@ -66,6 +69,9 @@
                 color: #a1a1aa;
                 grid-column: 2 / 3;
                 grid-row: 2 / 3;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
 
         }
@@ -199,6 +205,9 @@
             .description {
                 font-size: 14px;
                 color: #a1a1aa;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
             }
 
             .editInput {
@@ -306,9 +315,50 @@
 
     .list {
         .title {
-            font-size: 34px;
-            font-weight: 500;
-            line-height: 34px;
+            background-color: violet;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            padding: 5px 10px 5px 0;
+            margin-bottom: 10px;
+
+            .text {
+                display: inline-block;
+                font-size: 34px;
+                font-weight: 500;
+                line-height: 34px;
+                color: #404040;
+                border-bottom-right-radius: 6px;
+                border-top-right-radius: 6px;
+                background-color: #fff;
+                padding: 4px 8px 4px 4px;
+            }
+        }
+
+        .info {
+            display: flex;
+            align-items: center;
+            column-gap: 10px;
+            margin-bottom: 10px;
+
+            .infoItem {
+                display: inline-flex;
+                align-items: center;
+                column-gap: 6px;
+                font-size: 14px;
+                color: #737373;
+            }
+
+            .seperator {
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+                background-color: #d4d4d4;
+            }
+        }
+
+        .description {
+            font-size: 16px;
+            color: #71717a;
             margin-bottom: 32px;
         }
 

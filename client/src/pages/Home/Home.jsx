@@ -25,6 +25,7 @@ export default function Home() {
     const [dndDisable, setDndDisable] = useState(true);
     const [colorPicker, setColorPicker] = useState({open: false, color: ""});
     const input = useRef();
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     /*
         slowCollectedData - state will be updated whenever new information fetched,
@@ -87,7 +88,7 @@ export default function Home() {
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};
-        newData[showList.slug] = {...showList, list: [...JSON.parse(newBody.body).list]};
+        newData[showList.slug] = {...showList, list: [...JSON.parse(newBody.body).list], count: JSON.parse(newBody.body).count};
         setSlowCollectedData(newData);
         console.log("added item and cached");
 
@@ -149,6 +150,9 @@ export default function Home() {
             .then(data => fetchHeads())
             .catch(err => console.error(err));
 
+        let newData = {...slowCollectedData};
+        newData[list.slug] = {...newData[list.slug], ...JSON.parse(newBody.body)};
+        setSlowCollectedData(newData);
         setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
         setColorPicker({open: false, color: ""});
     }
@@ -361,6 +365,11 @@ export default function Home() {
         }
     }, [slowCollectedData])
 
+    useEffect(() => {
+        console.log("changed showlist", showList)
+
+    }, [showList])
+
     return (
         <>
             <main className={style.main}>
@@ -427,7 +436,21 @@ export default function Home() {
                 </nav>
                 <section className={style.listView}>
                     <div className={style.list}>
-                        <h1 className={style.title}>{showList.head}</h1>
+                        <h1 className={style.title}>
+                            <p className={style.text}>{showList.head}</p>
+                        </h1>
+                        <div className={style.info}>
+                            <div className={style.infoItem}>
+                                {showList.count} items
+                            </div>
+                            <div className={style.seperator}></div>
+                            <div className={style.infoItem}>
+                                <p>{months[(new Date(showList.creationDate).getMonth())]}</p>
+                                <p>{(new Date(showList.creationDate).getDate())}</p>
+                                <p>{(new Date(showList.creationDate).getFullYear())}</p>
+                            </div>
+                        </div>
+                        <div className={style.description}>{showList.description}</div>
                         <p onClick={() => setDndDisable(prevVal => !prevVal)}>activate dnd</p>
                         <div className={style.items}>
                             
