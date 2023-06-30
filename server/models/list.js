@@ -19,6 +19,11 @@ const listSchema = new mongoose.Schema({
         required: false,
         default: []
     },
+    count: {
+        type: Number,
+        required: false,
+        default: 0
+    },
     color: {
         type: String,
         required: true,

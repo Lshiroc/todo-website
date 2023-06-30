@@ -74,15 +74,16 @@ export default function Home() {
                     {
                         text: e.target.value.trim(),
                         status: "undone",
-                        slug: createSlug(8)
+                        slug: createSlug(8),
                     }
-                ]
+                ],
+                count: showList.list.length + 1
             })
         }
 
         fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
-            .then(data => console.log(data))
+            .then(data => fetchHeads())
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};
@@ -171,6 +172,7 @@ export default function Home() {
                 head: "New List",
                 description: "description for list",
                 list: [],
+                count: 0,
                 color: "#22c55e"
             })
         }
@@ -264,7 +266,7 @@ export default function Home() {
         context-menu or "more" menu when clicked
         outside of menu frame
     */
-   const handleContext = (e) => {
+    const handleContext = (e) => {
         let listSlug = e.target.getAttribute("slug");
         if(listSlug) {
             setContextMenu({x: e.pageX, y: e.pageY, slug: listSlug, open: true, operation: null});
@@ -281,6 +283,7 @@ export default function Home() {
             setCurrentItem({slug: "", open: false});
         }
     }
+
     useEffect(() => {
         window.addEventListener("click", handleContextClick);
         window.addEventListener("contextmenu", handleContext);
@@ -296,7 +299,6 @@ export default function Home() {
             setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
         }
     }, [currentItem])
-
 
     /*
         Drag event function to keep track of 
@@ -359,10 +361,6 @@ export default function Home() {
         }
     }, [slowCollectedData])
 
-    useEffect(() => {
-        console.log(colorPicker)
-    }, [colorPicker])
-
     return (
         <>
             <main className={style.main}>
@@ -403,7 +401,7 @@ export default function Home() {
                                     </div>
                                     :
                                     <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={style.list}>
-                                        <div className={style.color} style={{backgroundColor: list.color}}>4</div>
+                                        <div slug={list.slug} className={style.color} style={{backgroundColor: list.color}}>{list.count}</div>
                                         <div slug={list.slug} className={style.head}>{list.head}</div>
                                         <div slug={list.slug} className={style.description}>{list.description}</div>
                                     </div>                                    
@@ -446,7 +444,7 @@ export default function Home() {
                                 >
                                     {
                                         showList?.list.map((item) => (
-                                            <ListItem key={item.slug} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} currentItem={currentItem} setCurrentItem={setCurrentItem} dndDisable={dndDisable} listSlug={showList?.slug} allData={data} props={item} showList={showList} setShowList={setShowList} />
+                                            <ListItem key={item.slug} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} currentItem={currentItem} setCurrentItem={setCurrentItem} dndDisable={dndDisable} listSlug={showList?.slug} allData={data} props={item} showList={showList} setShowList={setShowList} />
                                         ))
                                     }
                                 </SortableContext>

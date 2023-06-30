@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.get('/heads', async (req, res) => {
     let lists;
     try {
-        lists = await List.find().select('slug head description color');
+        lists = await List.find().select('slug head description count color');
         res.status(200).json(lists);
     } catch (err) {
         res.status(500).json({message: err.message});

@@ -11,7 +11,7 @@ import cross from './../../assets/icons/cross.svg';
 import waiting from './../../assets/icons/waiting.svg';
 import moreIcon from './../../assets/icons/more.svg';
 
-export default function ListItem({props, allData, listSlug, setSlowCollectedData, slowCollectedData, setCurrentItem, currentItem, setShowList, showList, dndDisable}) {
+export default function ListItem({props, allData, fetchHeads, listSlug, setSlowCollectedData, slowCollectedData, setCurrentItem, currentItem, setShowList, showList, dndDisable}) {
     const [contextMenu, setContextMenu] = useState({x: null, y: null, slug: '', open: false, operation: null});
 
     // Necessary tools for DND-kit
@@ -62,7 +62,8 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
                 ...showList,
                 list: [
                     ...itemsTemp
-                ]
+                ],
+                count: itemsTemp.length
             })
         }
         
@@ -91,13 +92,14 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
                 ...showList,
                 list: [
                     ...tempItems
-                ]
+                ],
+                count: tempItems.length
             })
         }
 
         fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
-            .then(data => console.log("removed", data))
+            .then(data => fetchHeads())
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};
@@ -143,7 +145,8 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
                 description: showList.description,
                 list: [
                     ...itemsTemp
-                ]
+                ],
+                count: showList.list.length
             })
         }
 
@@ -176,7 +179,8 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
                 list: [
                     ...listBody[0].list,
                     tempItem
-                ]
+                ],
+                count: showList.list.length - 1
             })
         }
 
