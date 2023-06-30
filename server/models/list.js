@@ -19,6 +19,11 @@ const listSchema = new mongoose.Schema({
         required: false,
         default: []
     },
+    color: {
+        type: String,
+        required: true,
+        default: "#22c55e"
+    },
     creationDate: {
         type: Date,
         required: true,

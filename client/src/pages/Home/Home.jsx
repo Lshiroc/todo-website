@@ -15,12 +15,15 @@ import {
     verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 
+import editIcon from './../../assets/icons/edit2.svg';
+
 export default function Home() {
     const [data, setData] = useState([]);
     const [showList, setShowList] = useState({list: []});
     const [currentItem, setCurrentItem] = useState({slug: "", open: false});
     const [contextMenu, setContextMenu] = useState({x: null, y: null, slug: "", element: "", open: false, operation: null});
     const [dndDisable, setDndDisable] = useState(true);
+    const [colorPicker, setColorPicker] = useState({open: false, color: ""});
     const input = useRef();
 
     /*
@@ -127,7 +130,7 @@ export default function Home() {
     }
 
     // Save Edited List title
-    const saveEditedList = (e, list) => {
+    const saveEditedList = (e, list, defaultColor) => {
         const newBody = {
             method: "PATCH",
             headers: {
@@ -135,7 +138,8 @@ export default function Home() {
             },
             body: JSON.stringify({
                 head: e.target.value.trim(),
-                description: list.description
+                description: list.description,
+                color: colorPicker.color == "" ? defaultColor : colorPicker.color
             })
         }
 
@@ -145,6 +149,7 @@ export default function Home() {
             .catch(err => console.error(err));
 
         setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
+        setColorPicker({open: false, color: ""});
     }
 
     // Fetch heads
@@ -165,7 +170,8 @@ export default function Home() {
             body: JSON.stringify({
                 head: "New List",
                 description: "description for list",
-                list: []
+                list: [],
+                color: "#22c55e"
             })
         }
 
@@ -262,6 +268,7 @@ export default function Home() {
         let listSlug = e.target.getAttribute("slug");
         if(listSlug) {
             setContextMenu({x: e.pageX, y: e.pageY, slug: listSlug, open: true, operation: null});
+            setColorPicker({open: false, color: ""});
         } else {
             setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
             setCurrentItem({slug: "", open: false});
@@ -352,29 +359,63 @@ export default function Home() {
         }
     }, [slowCollectedData])
 
+    useEffect(() => {
+        console.log(colorPicker)
+    }, [colorPicker])
+
     return (
         <>
             <main className={style.main}>
                 <nav className={style.navbar}>
                     <div className={style.lists}>
                         <h1 className={style.sectionTitle}>Lists</h1>
+                        
                         {/* Lists */}
                         <div className={style.content}>
                             {
                                 data && data.map((list, index) => (
                                     contextMenu.slug == list.slug && contextMenu.element == "list" && contextMenu.operation == "edit" ?
-                                    <input key={index} className={style.editInput} defaultValue={list.head} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedList(e, list);}} />
+                                    <div key={index} className={style.editing}>
+                                        <div className={style.color} style={{backgroundColor: colorPicker.color == "" ? list.color : colorPicker.color}} onClick={() => setColorPicker({...colorPicker, open: !colorPicker.open})}>
+                                            <img src={editIcon} alt="Edit color" />
+                                        </div>
+                                        <input className={style.editInput} defaultValue={list.head} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedList(e, list, list.color);}} />
+                                        <div className={style.description}>{list.description}</div>
+                                        <div className={`${style.colorpicker} ${colorPicker.open && style.open}`}>
+                                            <div className={`${style.theme} ${style.red}`} onClick={() => {setColorPicker({open: false, color: "#ef4444"})}}></div>
+                                            <div className={`${style.theme} ${style.orange}`} onClick={() => {setColorPicker({open: false, color: "#f97316"})}}></div>
+                                            <div className={`${style.theme} ${style.amber}`} onClick={() => {setColorPicker({open: false, color: "#f59e0b"})}}></div>
+                                            <div className={`${style.theme} ${style.yellow}`} onClick={() => {setColorPicker({open: false, color: "#eab308"})}}></div>
+                                            <div className={`${style.theme} ${style.lime}`} onClick={() => {setColorPicker({open: false, color: "#84cc16"})}}></div>
+                                            <div className={`${style.theme} ${style.green}`} onClick={() => {setColorPicker({open: false, color: "#22c55e"})}}></div>
+                                            <div className={`${style.theme} ${style.emerald}`} onClick={() => {setColorPicker({open: false, color: "#10b981"})}}></div>
+                                            <div className={`${style.theme} ${style.teal}`} onClick={() => {setColorPicker({open: false, color: "#14b8a6"})}}></div>
+                                            <div className={`${style.theme} ${style.cyan}`} onClick={() => {setColorPicker({open: false, color: "#06b6d4"})}}></div>
+                                            <div className={`${style.theme} ${style.sky}`} onClick={() => {setColorPicker({open: false, color: "#0ea5e9"})}}></div>
+                                            <div className={`${style.theme} ${style.blue}`} onClick={() => {setColorPicker({open: false, color: "#3b82f6"})}}></div>
+                                            <div className={`${style.theme} ${style.indigo}`} onClick={() => {setColorPicker({open: false, color: "#6366f1"})}}></div>
+                                            <div className={`${style.theme} ${style.violet}`} onClick={() => {setColorPicker({open: false, color: "#8b5cf6"})}}></div>
+                                            <div className={`${style.theme} ${style.purple}`} onClick={() => {setColorPicker({open: false, color: "#a855f7"})}}></div>
+                                            <div className={`${style.theme} ${style.fuchsia}`} onClick={() => {setColorPicker({open: false, color: "#d946ef"})}}></div>
+                                            <div className={`${style.theme} ${style.pink}`} onClick={() => {setColorPicker({open: false, color: "#ec4899"})}}></div>
+                                            <div className={`${style.theme} ${style.rose}`} onClick={() => {setColorPicker({open: false, color: "#f43f5e"})}}></div>
+                                        </div>
+                                    </div>
                                     :
-                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={style.list}>{list.head}</div>                                    
+                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={style.list}>
+                                        <div className={style.color} style={{backgroundColor: list.color}}>4</div>
+                                        <div slug={list.slug} className={style.head}>{list.head}</div>
+                                        <div slug={list.slug} className={style.description}>{list.description}</div>
+                                    </div>                                    
                                 ))
                             }
                             <div className={style.addListBtn} onClick={() => createNewList()}>Add List</div>
                         </div>
                         <div className={`${style.contextMenu} ${contextMenu.open && style.open}`} onClick={(e) => e.stopPropagation()} style={{top: contextMenu.y ? contextMenu.y : 'auto', left: contextMenu.x ? contextMenu.x : 'auto'}}>
-                            <div className={style.option} onClick={() => {deleteList(contextMenu.slug); setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null})}}>delete</div>
-                            <div className={style.option} onClick={() => {setContextMenu({x: null, y: null, slug: contextMenu.slug, element: "list", open: false, operation: "edit"})}}>edit</div>
+                            <div className={style.option} onClick={() => {setContextMenu({x: null, y: null, slug: contextMenu.slug, element: "list", open: false, operation: "edit"})}}>Edit</div>
+                            <div className={`${style.option} ${style.deleteOption}`} onClick={() => {deleteList(contextMenu.slug); setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null})}}>Delete</div>
                             <div className={`${style.option} ${style.openable}`}>
-                                <p>transfer to</p>
+                                <p>Transfer to</p>
                                 <div className={`${style.innerSelection}`}>
                                     {
                                         data.map((list, index) => (
@@ -388,9 +429,10 @@ export default function Home() {
                 </nav>
                 <section className={style.listView}>
                     <div className={style.list}>
-                        <h1 className={style.title}>Recipes</h1>
+                        <h1 className={style.title}>{showList.head}</h1>
                         <p onClick={() => setDndDisable(prevVal => !prevVal)}>activate dnd</p>
                         <div className={style.items}>
+                            
                             {/* Draggable Part with DND-Kit */}
                             <DndContext
                                 collisionDetection={closestCenter}
@@ -409,7 +451,6 @@ export default function Home() {
                                     }
                                 </SortableContext>
                             </DndContext>
-
                         </div>
                         <div className={style.addItem}>
                             <input type="text" ref={input} slug="d23FD67s" placeholder="I'll shave my head off" onKeyDown={(e) => {e.key == "Enter" && addText(e)}} />

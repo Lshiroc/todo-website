@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 router.get('/heads', async (req, res) => {
     let lists;
     try {
-        lists = await List.find().select('slug head description');
+        lists = await List.find().select('slug head description color');
         res.status(200).json(lists);
     } catch (err) {
         res.status(500).json({message: err.message});
@@ -41,6 +41,7 @@ router.post('/', async (req, res) => {
         head: req.body.head,
         description: req.body.description,
         list: req.body.list,
+        color: req.body.color
     });
 
     try {

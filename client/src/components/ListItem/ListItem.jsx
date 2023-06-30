@@ -3,10 +3,13 @@ import { useState, useEffect } from 'react';
 import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import dragIcon from './../../assets/icons/drag-icon.svg';
-import maruIcon from './../../assets/icons/maru.svg';
-import batsuIcon from './../../assets/icons/batsu.svg';
-import sankakuIcon from './../../assets/icons/sankaku.svg';
-
+// import maruIcon from './../../assets/icons/maru.svg';
+// import batsuIcon from './../../assets/icons/batsu.svg';
+// import sankakuIcon from './../../assets/icons/sankaku.svg';
+import done from './../../assets/icons/done.svg';
+import cross from './../../assets/icons/cross.svg';
+import waiting from './../../assets/icons/waiting.svg';
+import moreIcon from './../../assets/icons/more.svg';
 
 export default function ListItem({props, allData, listSlug, setSlowCollectedData, slowCollectedData, setCurrentItem, currentItem, setShowList, showList, dndDisable}) {
     const [contextMenu, setContextMenu] = useState({x: null, y: null, slug: '', open: false, operation: null});
@@ -212,35 +215,34 @@ export default function ListItem({props, allData, listSlug, setSlowCollectedData
             window.removeEventListener("contextmenu", handleContext);
         }
     }, [contextMenu, currentItem])
-    console.log(props.status)
 
     return (
-        <div ref={setNodeRef} data-no-dnd="true" style={style2} className={style.item} onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.pageX, y: e.pageY, slug: props.slug, open: true, operation: null}); setCurrentItem({slug: props.slug, open: true})}}>
-            <button {...attributes} {...listeners} className={`${style.dragBtn} ${!dndDisable && style.active}`}>
-                <img src={dragIcon} alt="Drag" draggable="false" />
-            </button>
+        <div ref={setNodeRef} data-no-dnd="true" style={style2} className={style.item}  onClick={() => {dndDisable && updateStatus(props.status)}} onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.pageX, y: e.pageY, slug: props.slug, open: true, operation: null}); setCurrentItem({slug: props.slug, open: true})}}>
             <div className={`${style.itemContent} ${contextMenu.operation == "edit" && contextMenu.slug == props.slug && style.editVersion}`}>
-                <span className={`${style.customCheckBox} ${style[props.status]}`} onClick={() => updateStatus(props.status)}>
-                    <img src={maruIcon} alt="Done" className={`${style.checkmark} ${style.maru}`} />
-                    <img src={batsuIcon} alt="Undone" className={`${style.checkmark} ${style.batsu}`} />
-                    <img src={sankakuIcon} alt="Pending" className={`${style.checkmark} ${style.sankaku}`} />
+                <span {...attributes} {...listeners} className={`${style.customCheckBox} ${style[props.status]} ${!dndDisable && style.dndActive}`}>
+                    <img src={done} alt="Done" className={`${style.checkmark} ${style.maru}`} draggable="false" />
+                    <img src={cross} alt="Undone" className={`${style.checkmark} ${style.batsu}`} draggable="false" />
+                    <img src={waiting} alt="Pending" className={`${style.checkmark} ${style.sankaku}`} draggable="false" />
+                    <img src={dragIcon} alt="Drag" className={`${style.checkmark} ${style.dndIcon}`} draggable="false" />
                     {/* <input type="checkbox" id={props.slug} slug={props.slug} checked={props.done} style={{display: dndDisable ? "block" : "none"}} onChange={(e) => {updateStatus(e)}} /> */}
                 </span>
-                <label className={style.text} htmlFor={dndDisable ? props.slug : 'none'} onClick={(e) => {e.preventDefault()}} >{props.text}</label>
+                <label className={style.text}>{props.text}</label>
                 {contextMenu.operation == "edit" && contextMenu.slug == props.slug && <input className={style.editInput} defaultValue={props.text} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedText(e);}} />}
             </div>
             <div className={style.moreContainer} style={{position: contextMenu.x != null ? "unset" : "relative"}}>
                 
                 {/* Toggling context-menu via a shared state between ListItem and Home */}
-                <div className={style.moreBtn} onClick={(e) => {e.stopPropagation(); setContextMenu({x: null, y: null, slug: "", open: false, operation: null}); setCurrentItem({slug: props.slug, open: currentItem.slug == props.slug && currentItem.open ? false : true});}}>more</div>
+                <div className={style.moreBtn} onClick={(e) => {e.stopPropagation(); setContextMenu({x: null, y: null, slug: "", open: false, operation: null}); setCurrentItem({slug: props.slug, open: currentItem.slug == props.slug && currentItem.open ? false : true});}}>
+                    <img src={moreIcon} alt="More" />
+                </div>
                 <div className={`${style.contextMenu} ${currentItem.slug == props.slug && currentItem.open && style.open}`} onClick={(e) => e.stopPropagation()} style={{top: contextMenu.y !== null ? contextMenu.y : "auto", left: contextMenu.x !== null && window.innerWidth - contextMenu.x <= 100 ? "auto" : contextMenu.x}}>
                     
                     {/* Options for context-menu */}
-                    <div className={style.option} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: props.slug, open: false, operation: "edit"})}}>edit</div>
-                    <div className={style.option} onClick={() => {navigator.clipboard.writeText(props.text); setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}}>copy</div>
-                    <div className={style.option} onClick={() => deleteItem(props.slug)}>delete</div>
+                    <div className={style.option} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: props.slug, open: false, operation: "edit"})}}>Edit</div>
+                    <div className={style.option} onClick={() => {navigator.clipboard.writeText(props.text); setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}}>Copy</div>
+                    <div className={`${style.option} ${style.deleteOption}`} onClick={() => deleteItem(props.slug)}>Delete</div>
                     <div className={`${style.option} ${style.openable}`} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}}>
-                        <p>move to</p>
+                        <p>Move to</p>
                         <div className={`${style.innerSelection} ${!contextMenu.x ? style.leftVersion : window.innerWidth - contextMenu.x <= 400 && style.leftVersion}`}>
                             {
                                 allData.map((list, index) => (
