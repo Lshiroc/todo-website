@@ -24,6 +24,7 @@ export default function Home() {
     const [contextMenu, setContextMenu] = useState({x: null, y: null, slug: "", element: "", open: false, operation: null});
     const [dndDisable, setDndDisable] = useState(true);
     const [colorPicker, setColorPicker] = useState({open: false, color: ""});
+    const [isEditing, setIsEditing] = useState(false);
     const input = useRef();
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -97,8 +98,9 @@ export default function Home() {
 
     // Fetch List when demanded
     const fetchList = (listSlug) => {
+        console.log("fetcching", listSlug)
         if(Object.hasOwn(slowCollectedData, listSlug)) {
-            console.log("cached");
+            console.log("cached", slowCollectedData[listSlug]);
             setShowList(slowCollectedData[listSlug]);
         } else {
             fetch(`http://127.0.0.1:8000/todos/${listSlug}`)
@@ -150,9 +152,39 @@ export default function Home() {
             .then(data => fetchHeads())
             .catch(err => console.error(err));
 
+        if(slowCollectedData[list.slug]) {
+            let newData = {...slowCollectedData};
+            newData[list.slug] = {...newData[list.slug], ...JSON.parse(newBody.body)};
+            console.log("list title updated", newData)
+            setSlowCollectedData(newData);
+        }
+        setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
+        setColorPicker({open: false, color: ""});
+    }
+
+    // Save Edited List description
+    const saveEditedDescription = (e) => {
+        const newBody = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                head: showList.head,
+                description: e.target.value.trim(),
+                color: showList.color
+            })
+        }
+
+        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
+            .then(resp => resp.json())
+            .then(data => fetchHeads())
+            .catch(err => console.error(err));
+
         let newData = {...slowCollectedData};
-        newData[list.slug] = {...newData[list.slug], ...JSON.parse(newBody.body)};
+        newData[showList.slug] = {...newData[showList.slug], ...JSON.parse(newBody.body)};
         setSlowCollectedData(newData);
+        setIsEditing(false);
         setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
         setColorPicker({open: false, color: ""});
     }
@@ -238,12 +270,14 @@ export default function Home() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    ...tempItems
+                    ...tempItems,
+                    count: tempItems.list.length
                 })
             }
 
             let newData = tempData;
-            newData[toSlug] = tempItems;
+            newData[toSlug] = {...tempItems};
+            newData[toSlug]["count"] = tempItems.list.length;
             setShowList(newData[toSlug]);
             setSlowCollectedData(newData);
 
@@ -365,11 +399,6 @@ export default function Home() {
         }
     }, [slowCollectedData])
 
-    useEffect(() => {
-        console.log("changed showlist", showList)
-
-    }, [showList])
-
     return (
         <>
             <main className={style.main}>
@@ -450,7 +479,17 @@ export default function Home() {
                                 <p>{(new Date(showList.creationDate).getFullYear())}</p>
                             </div>
                         </div>
-                        <div className={style.description}>{showList.description}</div>
+                        <div className={`${style.description} ${isEditing && style.editing}`}>
+                            <div className={style.text}>
+                                {showList.description}
+                                <div className={style.editBtn} onClick={() => setIsEditing(true)}>
+                                    <img src={editIcon} alt="Edit Description" />
+                                </div>
+                            </div>
+                            <div className={style.edit}>
+                                <input defaultValue={showList.description} className={style.editInput} onKeyDown={(e) => e.key == "Enter" && saveEditedDescription(e)} />
+                            </div>
+                        </div>
                         <p onClick={() => setDndDisable(prevVal => !prevVal)}>activate dnd</p>
                         <div className={style.items}>
                             

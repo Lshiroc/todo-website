@@ -180,7 +180,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
                     ...listBody[0].list,
                     tempItem
                 ],
-                count: showList.list.length - 1
+                count: listBody[0].list.length + 1
             })
         }
 

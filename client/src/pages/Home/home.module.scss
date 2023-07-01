@@ -360,6 +360,54 @@
             font-size: 16px;
             color: #71717a;
             margin-bottom: 32px;
+
+            .text {
+                font-size: 16px;
+                color: #71717a;
+                display: inline-flex;
+                align-items: center;
+
+                .editBtn {
+                    display: inline-block;
+                    opacity: 0;
+                    cursor: pointer;
+                    width: 20px;
+                    height: 20px;
+
+                    img {
+                        display: block;
+                        width: 16px;
+                        margin-left: 5px;
+                    }
+                }
+
+                &:hover {
+                    .editBtn {
+                        opacity: 1;
+                    }
+                }
+            }
+
+            .edit {
+                display: none;
+                .editInput {
+                    border: none;
+                    border-bottom: 1px dashed black;
+                    outline: none;
+                    font-size: 16px;
+                    color: #27272a;
+                }
+            }
+            
+            &.editing {
+                .text {
+                    display: none;
+                }
+
+                .edit {
+                    display: block;
+                }
+            }
         }
 
         .items {
