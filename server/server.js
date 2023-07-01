@@ -36,4 +36,8 @@ const todosRouter = require('./routes/todos');
 app.use(cors());
 app.use('/todos', todosRouter);
 
+const usersRouter = require('./routes/users');
+app.use(cors());
+app.use('/users', usersRouter);
+
 app.listen(PORT, () => console.log(`Server is up on http://127.0.0.1:${PORT}`));

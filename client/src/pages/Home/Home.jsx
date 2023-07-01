@@ -465,7 +465,7 @@ export default function Home() {
                 </nav>
                 <section className={style.listView}>
                     <div className={style.list}>
-                        <h1 className={style.title}>
+                        <h1 className={style.title} style={{backgroundColor: showList.color}}>
                             <p className={style.text}>{showList.head}</p>
                         </h1>
                         <div className={style.info}>

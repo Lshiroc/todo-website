@@ -22,3 +22,18 @@
 # }
 
 # GET http://127.0.0.1:8000/todos/KdCr5hAn
+
+
+
+### USER
+
+POST http://127.0.0.1:8000/users
+Content-Type: application/json
+
+{
+    "username": "ZeynalMardanli",
+    "mail": "zeynalmardanli4321@gmail.com",
+    "password": "myspecialPassword@@1!!",
+    "userID": "fsdfsdfsd3423"
+}
+
