@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -19,12 +20,12 @@ router.post('/login', async (req, res) => {
     const password = req.body.password;
     const userLogin = await User.find({ username: username, password: password });
     if(userLogin.length == 0) return res.sendStatus(404);
-
-    const userID = userLogin.userID;
+    
+    const userID = userLogin[0].userID;
     const user = { userID: userID };
 
-    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-    res.json({ accessToken: accessToken });
+    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {});
+    res.status(200).json({ accessToken: accessToken, userID: userID });
 })
 
 // Register a user
@@ -34,7 +35,6 @@ router.post('/register', async (req, res) => {
         mail: req.body.mail,
         password: req.body.password,
         userID: await createID(11),
-        token: await createID(64)
     })
 
     try {
@@ -45,6 +45,16 @@ router.post('/register', async (req, res) => {
     }
 })
 
+// Check Token
+router.post('/verifytoken', authenticateToken, async (req, res) => {
+    const token = req.body.token;
+    
+    try {
+        res.status(200).json(req.user);
+    } catch (err) {
+        res.status(500).json({message: err.message})
+    }
+})
 
 // Creating ID
 async function createID(n) {
@@ -64,12 +74,11 @@ async function createID(n) {
 
 // JWT Authentication
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.headers['authorization'];
     if(token == null) return res.sendStatus(401);
 
-    jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, user) => {
-        if(err) return res.sendStatus(403);
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if(err) return res.status(403).json({message: err.message});
         req.user = user;
         next();
     });

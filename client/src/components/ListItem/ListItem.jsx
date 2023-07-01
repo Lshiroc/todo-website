@@ -56,7 +56,8 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
         const newBody = {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 ...showList,
@@ -86,7 +87,8 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
         const newBody = {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 ...showList,
@@ -138,7 +140,8 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
         const newBody = {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 head: showList.head,
@@ -163,7 +166,14 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
 
     // Function to move the item to another list
     const moveItem = async (list) => {
-        const resp = await fetch(`http://127.0.0.1:8000/todos/${list}`);
+        let request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            }
+        }
+        const resp = await fetch(`http://127.0.0.1:8000/todos/${list}`, request);
         const listBody = await resp.json();
 
         let tempItem = props;
@@ -172,7 +182,8 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
         const newBody = {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 ...listBody[0],

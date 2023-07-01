@@ -1,5 +1,6 @@
 import style from './home.module.scss';
-import { useState, useEffect, useRef, createElement } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ListItem from './../../components/ListItem/ListItem.jsx';
 import {
     DndContext,
@@ -26,6 +27,7 @@ export default function Home() {
     const [colorPicker, setColorPicker] = useState({open: false, color: ""});
     const [isEditing, setIsEditing] = useState(false);
     const input = useRef();
+    const navigate = useNavigate();
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     /*
@@ -66,7 +68,8 @@ export default function Home() {
         const newBody = {
             method: "PATCH", 
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 head: showList.head,
@@ -103,7 +106,15 @@ export default function Home() {
             console.log("cached", slowCollectedData[listSlug]);
             setShowList(slowCollectedData[listSlug]);
         } else {
-            fetch(`http://127.0.0.1:8000/todos/${listSlug}`)
+            let request = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': localStorage.getItem('token')
+                }
+            }
+
+            fetch(`http://127.0.0.1:8000/todos/${listSlug}`, request)
                 .then(resp => resp.json())
                 .then(data => {
                     setShowList(data[0]);
@@ -123,7 +134,8 @@ export default function Home() {
         const newBody = {
             method: "DELETE",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             }
         }
 
@@ -138,7 +150,8 @@ export default function Home() {
         const newBody = {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 head: e.target.value.trim(),
@@ -167,7 +180,8 @@ export default function Home() {
         const newBody = {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
             },
             body: JSON.stringify({
                 head: showList.head,
@@ -191,7 +205,15 @@ export default function Home() {
 
     // Fetch heads
     const fetchHeads = () => {
-        fetch(`http://127.0.0.1:8000/todos/heads`)
+        let request = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': localStorage.getItem('token')
+            }
+        }
+
+        fetch(`http://127.0.0.1:8000/todos/heads`, request)
         .then(resp => resp.json())
         .then(data => setData(data))
         .catch(err => console.error(err));
@@ -202,14 +224,16 @@ export default function Home() {
         const newBody = {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "authorization": localStorage.getItem('token')
             },
             body: JSON.stringify({
                 head: "New List",
                 description: "description for list",
                 list: [],
                 count: 0,
-                color: "#22c55e"
+                color: "#22c55e",
+                userID: localStorage.getItem('userID')
             })
         }
 
@@ -267,7 +291,8 @@ export default function Home() {
             let newBody = {
                 method: "PATCH",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    'authorization': localStorage.getItem('token')
                 },
                 body: JSON.stringify({
                     ...tempItems,
@@ -294,9 +319,38 @@ export default function Home() {
         transfer(await fetchAll());
     }
 
+    // Checking Token
+    const checkToken = async () => {
+        const token = localStorage.getItem('token');
+
+        let requestBody = {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': token
+            }
+        }
+
+        let loginData;
+
+        loginData = await fetch('http://127.0.0.1:8000/users/verifytoken', requestBody)
+            .then(resp => resp.json())
+            .then(data => data)
+            .catch(err => console.error(err));
+
+        localStorage.setItem("userID", loginData.userID);
+        
+    }
+
     // Initial List fetch on page load
     useEffect(() => {
-        fetchHeads();
+        const token = localStorage.getItem("token");
+        if(token) {
+            checkToken();
+            fetchHeads();
+        } else {
+            navigate('/login', { replace: true });
+        }
     }, [])
 
     /* 

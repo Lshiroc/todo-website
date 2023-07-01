@@ -29,7 +29,7 @@ const listSchema = new mongoose.Schema({
         required: true,
         default: "#22c55e"
     },
-    author: {
+    userID: {
         type: String,
         required: true
     },

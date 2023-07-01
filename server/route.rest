@@ -29,16 +29,15 @@
 
 ### USER
 
-# POST http://127.0.0.1:8000/users/register
-# Content-Type: application/json
+POST http://127.0.0.1:8000/users/register
+Content-Type: application/json
 
-# {
-#     "username": "ZeynalMardanli",
-#     "mail": "zeynalmardanli4321@gmail.com",
-#     "password": "myspecialPassword@@1!!",
-#     "userID": "fsdfsdfsd3423"
-# }
-
+{
+    "username": "mardanli",
+    "mail": "zeynalmardanli4321@gmail.com",
+    "password": "mypassword!"
+}
+    
 # POST http://127.0.0.1:8000/login
 # Content-Type: application/json
 
@@ -46,10 +45,10 @@
 #     "username": "Zeynal"
 # }
 
-POST http://127.0.0.1:8000/users/login
-Content-Type: application/json
+# POST http://127.0.0.1:8000/users/login
+# Content-Type: application/json
 
-{
-    "username": "ZeynalMardanli",
-    "password": "myspecialPassword@@1!!"
-}
+# {
+#     "username": "ZeynalMardanli",
+#     "password": "myspecialPassword@@1!!"
+# }
