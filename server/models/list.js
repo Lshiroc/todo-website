@@ -29,6 +29,10 @@ const listSchema = new mongoose.Schema({
         required: true,
         default: "#22c55e"
     },
+    author: {
+        type: String,
+        required: true
+    },
     creationDate: {
         type: Date,
         required: true,

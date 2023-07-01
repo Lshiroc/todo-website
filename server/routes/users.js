@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const User = require('./../models/user');
 
 // Getting all the users
@@ -12,13 +13,28 @@ router.get('/', async (req, res) => {
     }
 })
 
+// Login User
+router.post('/login', async (req, res) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const userLogin = await User.find({ username: username, password: password });
+    if(userLogin.length == 0) return res.sendStatus(404);
+
+    const userID = userLogin.userID;
+    const user = { userID: userID };
+
+    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
+    res.json({ accessToken: accessToken });
+})
+
 // Register a user
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
     const user = new User({
         username: req.body.username,
         mail: req.body.mail,
         password: req.body.password,
-        userID: await createID(11)
+        userID: await createID(11),
+        token: await createID(64)
     })
 
     try {
@@ -28,6 +44,7 @@ router.post('/', async (req, res) => {
         res.status(500).json({message: err.message});
     }
 })
+
 
 // Creating ID
 async function createID(n) {
@@ -43,6 +60,19 @@ async function createID(n) {
     }
     
     return createID(n);
+}
+
+// JWT Authentication
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if(token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.ACESS_TOKEN_SECRET, (err, user) => {
+        if(err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
 }
 
 

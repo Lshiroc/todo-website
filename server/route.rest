@@ -6,7 +6,9 @@
 # {
 #     "head": "my fresh lst",
 #     "description": "description for brief list",
-#     "list": []
+#     "list": [],
+#     "color": "#FDF",
+#     "userID": "sdg3244v3432f"
 # }
 
 # GET http://127.0.0.1:8000/todos/hCkbzbQD
@@ -27,13 +29,27 @@
 
 ### USER
 
-POST http://127.0.0.1:8000/users
+# POST http://127.0.0.1:8000/users/register
+# Content-Type: application/json
+
+# {
+#     "username": "ZeynalMardanli",
+#     "mail": "zeynalmardanli4321@gmail.com",
+#     "password": "myspecialPassword@@1!!",
+#     "userID": "fsdfsdfsd3423"
+# }
+
+# POST http://127.0.0.1:8000/login
+# Content-Type: application/json
+
+# {
+#     "username": "Zeynal"
+# }
+
+POST http://127.0.0.1:8000/users/login
 Content-Type: application/json
 
 {
     "username": "ZeynalMardanli",
-    "mail": "zeynalmardanli4321@gmail.com",
-    "password": "myspecialPassword@@1!!",
-    "userID": "fsdfsdfsd3423"
+    "password": "myspecialPassword@@1!!"
 }
-

@@ -34,14 +34,15 @@ router.get('/:slug', getList, async (req, res) => {
     }
 })
 
-// Creating todo list
+// Creating new list
 router.post('/', async (req, res) => {
     const list = new List({
         slug: await createSlug(8),
         head: req.body.head,
         description: req.body.description,
         list: req.body.list,
-        color: req.body.color
+        color: req.body.color,
+        author: req.body.userID
     });
 
     try {
