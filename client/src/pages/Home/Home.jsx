@@ -2,7 +2,8 @@ import style from './home.module.scss';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import List from './../../components/List/List';
-import Details from '../../components/Details/Details';
+import Details from './../../components/Details/Details';
+import Statistics from './../../components/Statistics/Statistics';
 
 import editIcon from './../../assets/icons/edit2.svg';
 
@@ -14,7 +15,7 @@ export default function Home() {
     const [dndDisable, setDndDisable] = useState(true);
     const [colorPicker, setColorPicker] = useState({open: false, color: ""});
     const [isEditing, setIsEditing] = useState(false);
-    const [popUpOpen, setPopUpOpen] = useState(false);
+    const [pageOpen, setPageOpen] = useState('');
     const navigate = useNavigate();
 
     /*
@@ -361,15 +362,18 @@ export default function Home() {
                                     }
                                 </div>
                             </div>
-                            <div className={style.option} onClick={() => setPopUpOpen(true)}>Detail</div>
+                            <div className={style.option} onClick={() => setPageOpen('details')}>Detail</div>
                         </div>
                     </div>
                 </nav>
                 <section className={style.listView}>
-                    {popUpOpen ? (
+                    {pageOpen == 'details' ? (
                         <Details showList={showList} />
+                    ) : 
+                    pageOpen == 'statistics' ? (
+                        <Statistics />
                     ) : (
-                        <List setContextMenu={setContextMenu} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
+                        <List setContextMenu={setContextMenu} setPageOpen={setPageOpen} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
                     )}
                 </section>
             </main>

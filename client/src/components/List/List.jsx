@@ -18,7 +18,7 @@ import {
 } from '@dnd-kit/sortable';
 
 
-export default function List({setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
+export default function List({setPageOpen, setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
 
     // Settings to make DND-kit clickable
     const sensors = useSensors(
@@ -194,6 +194,7 @@ export default function List({setContextMenu, setColorPicker, fetchHeads, setSlo
                 </div>
             </div>
             <p onClick={() => setDndDisable(prevVal => !prevVal)}>activate dnd</p>
+            <p onClick={() => setPageOpen('statistics')}>statistics</p>
             <div className={style.items}>
                 
                 {/* Draggable Part with DND-Kit */}
