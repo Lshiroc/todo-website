@@ -21,11 +21,22 @@
 }
 
 .lists {
-    .sectionTitle {
-        font-size: 34px;
-        font-weight: 500;
-        line-height: 32px;
-        margin-bottom: 32px;
+    .userSection {
+        display: grid;
+        grid-template-columns: auto 30px 30px;
+        align-items: center;
+        column-gap: 15px;
+        margin-bottom: 40px;
+
+        .profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #71717a;
+        }
+
+        .item {
+        }
     }
 
     .content {
