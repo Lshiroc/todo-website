@@ -2,6 +2,7 @@ import style from './home.module.scss';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import List from './../../components/List/List';
+import Details from '../../components/Details/Details';
 
 import editIcon from './../../assets/icons/edit2.svg';
 
@@ -96,34 +97,6 @@ export default function Home() {
             console.log("list title updated", newData)
             setSlowCollectedData(newData);
         }
-        setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
-        setColorPicker({open: false, color: ""});
-    }
-
-    // Save Edited List description
-    const saveEditedDescription = (e) => {
-        const newBody = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                'authorization': localStorage.getItem('token')
-            },
-            body: JSON.stringify({
-                head: showList.head,
-                description: e.target.value.trim(),
-                color: showList.color
-            })
-        }
-
-        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
-            .then(resp => resp.json())
-            .then(data => fetchHeads())
-            .catch(err => console.error(err));
-
-        let newData = {...slowCollectedData};
-        newData[showList.slug] = {...newData[showList.slug], ...JSON.parse(newBody.body)};
-        setSlowCollectedData(newData);
-        setIsEditing(false);
         setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
         setColorPicker({open: false, color: ""});
     }
@@ -388,12 +361,16 @@ export default function Home() {
                                     }
                                 </div>
                             </div>
-                            <div className={style.option}>Detail</div>
+                            <div className={style.option} onClick={() => setPopUpOpen(true)}>Detail</div>
                         </div>
                     </div>
                 </nav>
                 <section className={style.listView}>
-                    <List fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
+                    {popUpOpen ? (
+                        <Details showList={showList} />
+                    ) : (
+                        <List setContextMenu={setContextMenu} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
+                    )}
                 </section>
             </main>
         </>

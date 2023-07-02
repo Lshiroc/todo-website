@@ -1,0 +1,52 @@
+.container {
+
+}
+
+.content {
+    width: 100%;
+
+    .top {
+        margin-bottom: 52px;
+
+        .title {
+            font-size: 34px;
+            font-weight: 500;
+            line-height: 32px;
+            color: #27272a;
+        }
+    }
+
+    .main {
+        .line {
+            font-size: 16px;
+            color: #71717a;
+
+            &.theme {
+                display: flex;
+                align-items: center;
+            }
+
+            .colorPreview {
+                display: inline-block;
+                width: 15px;
+                height: 15px;
+                border-radius: 2px;
+                margin-left: 10px;
+            }
+
+            .lineInfo {
+                font-size: 16px;
+                font-weight: 500;
+                color: #27272a;
+                margin-left: 8px;
+            }
+        }
+
+        .brief {
+            display: grid;
+            grid-template-columns: repeat(2, calc(50% - 20px ));
+            column-gap: 20px;
+            row-gap: 25px;
+        }
+    }
+}

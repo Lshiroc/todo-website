@@ -18,7 +18,7 @@ import {
 } from '@dnd-kit/sortable';
 
 
-export default function List({fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
+export default function List({setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
 
     // Settings to make DND-kit clickable
     const sensors = useSensors(
@@ -136,6 +136,34 @@ export default function List({fetchHeads, setSlowCollectedData, slowCollectedDat
         console.log("added item and cached");
 
         input.current.value = "";
+    }
+
+    // Save Edited List description
+    const saveEditedDescription = (e) => {
+        const newBody = {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                'authorization': localStorage.getItem('token')
+            },
+            body: JSON.stringify({
+                head: showList.head,
+                description: e.target.value.trim(),
+                color: showList.color
+            })
+        }
+
+        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
+            .then(resp => resp.json())
+            .then(data => fetchHeads())
+            .catch(err => console.error(err));
+
+        let newData = {...slowCollectedData};
+        newData[showList.slug] = {...newData[showList.slug], ...JSON.parse(newBody.body)};
+        setSlowCollectedData(newData);
+        setIsEditing(false);
+        setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
+        setColorPicker({open: false, color: ""});
     }
 
     return (
