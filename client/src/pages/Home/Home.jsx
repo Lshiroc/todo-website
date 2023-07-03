@@ -17,6 +17,8 @@ export default function Home() {
     const [isEditing, setIsEditing] = useState(false);
     const [pageOpen, setPageOpen] = useState('');
     const navigate = useNavigate();
+    const listCount = Number(localStorage.getItem('listCount')) || 3;
+    const listPreviewArr = Array(listCount).fill("1");
 
     /*
         slowCollectedData - state will be updated whenever new information fetched,
@@ -297,6 +299,11 @@ export default function Home() {
         }
     }, [slowCollectedData])
 
+    useEffect(() => {
+        localStorage.setItem('listCount', data.length);
+        console.log(Array(Number(localStorage.getItem('listCount'))).fill("1"), Array(Number(listCount)).fill("1"));
+    }, [data])
+
     return (
         <>
             <main className={style.main}>
@@ -311,7 +318,7 @@ export default function Home() {
                         {/* Lists */}
                         <div className={style.content}>
                             {
-                                data && data.map((list, index) => (
+                                data[0]?.head ? data.map((list, index) => (
                                     contextMenu.slug == list.slug && contextMenu.element == "list" && contextMenu.operation == "edit" ?
                                     <div key={index} className={style.editing}>
                                         <div className={style.color} style={{backgroundColor: colorPicker.color == "" ? list.color : colorPicker.color}} onClick={() => setColorPicker({...colorPicker, open: !colorPicker.open})}>
@@ -340,12 +347,18 @@ export default function Home() {
                                         </div>
                                     </div>
                                     :
-                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={style.list}>
+                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={`${style.list} ${showList.slug == list.slug && style.current}`}>
                                         <div slug={list.slug} className={style.color} style={{backgroundColor: list.color}}>{list.count}</div>
                                         <div slug={list.slug} className={style.head}>{list.head}</div>
                                         <div slug={list.slug} className={style.description}>{list.description}</div>
                                     </div>                                    
-                                ))
+                                )) : listPreviewArr.map((item, index) => (
+                                        <div key={index} className={style.loadingItem}>
+                                            <div className={style.color}><div className={style.load}></div></div>
+                                            <div className={style.head}><div className={style.load}></div></div>
+                                            <div className={style.description}><div className={style.load}></div></div>
+                                        </div>
+                                    ))
                             }
                             <div className={style.addListBtn} onClick={() => createNewList()}>Add List</div>
                         </div>
@@ -369,8 +382,13 @@ export default function Home() {
                 <section className={style.listView}>
                     {pageOpen == 'details' ? (
                         <Details showList={showList} setPageOpen={setPageOpen} />
-                    ) : (
+                    ) : 
+                    showList.slug ? (
                         <List setContextMenu={setContextMenu} setPageOpen={setPageOpen} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
+                    ) : (
+                        <div className={style.blank}>
+                            <div className={style.text}>Not displaying a List</div>
+                        </div>
                     )}
                 </section>
             </main>
