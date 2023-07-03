@@ -2,6 +2,7 @@ import style from './list.module.scss';
 import { useRef } from 'react';
 import ListItem from './../../components/ListItem/ListItem.jsx';
 import editIcon from './../../assets/icons/edit2.svg';
+import dragIcon from './../../assets/icons/drag-icon.svg';
 
 import {
     DndContext,
@@ -193,27 +194,31 @@ export default function List({setPageOpen, setContextMenu, setColorPicker, fetch
                     <input defaultValue={showList.description} className={style.editInput} onKeyDown={(e) => e.key == "Enter" && saveEditedDescription(e)} />
                 </div>
             </div>
-            <p onClick={() => setDndDisable(prevVal => !prevVal)}>activate dnd</p>
-            <div className={style.items}>
-                
-                {/* Draggable Part with DND-Kit */}
-                <DndContext
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                    sensors={sensors}
-                >
-                    <SortableContext
-                        items={showList.list}
-                        strategy={verticalListSortingStrategy}
-                        useDragOverlay={false}
+            <div className={`${style.dragBtn} ${!dndDisable && style.active}`} onClick={() => setDndDisable(prevVal => !prevVal)}>
+                <img src={dragIcon} alt="Drag" draggable="false" />
+            </div>
+            <div className={style.itemsContainer}>
+                <div className={style.items}>
+                    {/* Draggable Part with DND-Kit */}
+                    <DndContext
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                        sensors={sensors}
                     >
-                        {
-                            showList?.list.map((item) => (
-                                <ListItem key={item.slug} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} currentItem={currentItem} setCurrentItem={setCurrentItem} dndDisable={dndDisable} listSlug={showList?.slug} allData={data} props={item} showList={showList} setShowList={setShowList} />
-                            ))
-                        }
-                    </SortableContext>
-                </DndContext>
+                        <SortableContext
+                            items={showList.list}
+                            strategy={verticalListSortingStrategy}
+                            useDragOverlay={false}
+                        >
+                            {
+                                showList?.list.map((item) => (
+                                    <ListItem key={item.slug} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} currentItem={currentItem} setCurrentItem={setCurrentItem} dndDisable={dndDisable} listSlug={showList?.slug} allData={data} props={item} showList={showList} setShowList={setShowList} />
+                                ))
+                            }
+                        </SortableContext>
+                    </DndContext>
+                </div>
+
             </div>
             <div className={style.addItem}>
                 <input type="text" ref={input} slug="d23FD67s" placeholder="I'll shave my head off" onKeyDown={(e) => {e.key == "Enter" && addText(e)}} />

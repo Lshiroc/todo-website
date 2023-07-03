@@ -3,7 +3,8 @@
 }
 
 .top {
-  margin-bottom: 52px;
+  margin-bottom: 42px;
+  padding-top: 60px;
 }
 .top .title {
   font-size: 34px;
@@ -13,5 +14,38 @@
 }
 
 .main .pieChart {
-  height: 200px;
+  width: 350px;
+}
+.main .pieChart .labels {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
+}
+.main .pieChart .labels .label {
+  display: flex;
+  align-items: center;
+}
+.main .pieChart .labels .label .number {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 18px;
+  padding: 2px 5px;
+  border-radius: 2px;
+  color: white;
+}
+.main .pieChart .labels .label .number.done {
+  background-color: #22c55e;
+}
+.main .pieChart .labels .label .number.pending {
+  background-color: #fbbf24;
+}
+.main .pieChart .labels .label .number.undone {
+  background-color: #ff4242;
+}
+.main .pieChart .labels .label .text {
+  font-size: 18px;
+  margin-left: 6px;
 }/*# sourceMappingURL=statistics.module.css.map */

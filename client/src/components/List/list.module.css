@@ -1,3 +1,7 @@
+.list {
+  position: relative;
+  min-height: 100%;
+}
 .list .title {
   background-color: violet;
   border-top-left-radius: 8px;
@@ -38,6 +42,7 @@
   background-color: #d4d4d4;
 }
 .list .description {
+  width: 550px;
   font-size: 16px;
   color: #71717a;
   margin-bottom: 32px;
@@ -67,11 +72,13 @@
   display: none;
 }
 .list .description .edit .editInput {
+  padding: 2px 5px;
+  width: 550px;
   border: none;
   border-bottom: 1px dashed black;
   outline: none;
-  font-size: 16px;
-  color: #27272a;
+  font-size: 17px;
+  color: #71717a;
 }
 .list .description.editing .text {
   display: none;
@@ -79,12 +86,34 @@
 .list .description.editing .edit {
   display: block;
 }
+.list .dragBtn {
+  display: inline-block;
+  padding: 8px 8px;
+  border-radius: 2px;
+  opacity: 0.8;
+  background-color: #e5e7eb;
+  transition: 0.2s;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -moz-user-select: none;
+       user-select: none;
+  cursor: pointer;
+}
+.list .dragBtn.active {
+  box-shadow: 0 0 0 1px #9ca3af;
+  opacity: 1;
+}
 .list .items {
   display: grid;
   grid-template-columns: 100%;
   margin-bottom: 32px;
+  overflow-y: scroll;
 }
 .list .addItem {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
   padding: 2px;
   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23ABA6A6' stroke-width='4' stroke-dasharray='10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
   background-repeat: no-repeat;

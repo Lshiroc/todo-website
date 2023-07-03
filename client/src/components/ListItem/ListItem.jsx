@@ -232,14 +232,13 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
     }, [contextMenu, currentItem])
 
     return (
-        <div ref={setNodeRef} data-no-dnd="true" style={style2} className={style.item} onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.pageX, y: e.pageY, slug: props.slug, open: true, operation: null}); setCurrentItem({slug: props.slug, open: true})}}>
+        <div ref={setNodeRef} data-no-dnd="true" style={style2} className={style.item} onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.clientX - e.currentTarget.getBoundingClientRect().left , y: e.clientY - e.currentTarget.getBoundingClientRect().top, slug: props.slug, open: true, operation: null}); setCurrentItem({slug: props.slug, open: true})}}>
             <div className={`${style.itemContent} ${contextMenu.operation == "edit" && contextMenu.slug == props.slug && style.editVersion}`}>
                 <span {...attributes} {...listeners} className={`${style.customCheckBox} ${style[props.status]} ${!dndDisable && style.dndActive}`} onClick={() => {dndDisable && updateStatus(props.status)}}>
                     <img src={done} alt="Done" className={`${style.checkmark} ${style.maru}`} draggable="false" />
                     <img src={cross} alt="Undone" className={`${style.checkmark} ${style.batsu}`} draggable="false" />
                     <img src={waiting} alt="Pending" className={`${style.checkmark} ${style.sankaku}`} draggable="false" />
                     <img src={dragIcon} alt="Drag" className={`${style.checkmark} ${style.dndIcon}`} draggable="false" />
-                    {/* <input type="checkbox" id={props.slug} slug={props.slug} checked={props.done} style={{display: dndDisable ? "block" : "none"}} onChange={(e) => {updateStatus(e)}} /> */}
                 </span>
                 <label className={style.text}>{props.text}</label>
                 {contextMenu.operation == "edit" && contextMenu.slug == props.slug && <input className={style.editInput} defaultValue={props.text} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedText(e);}} />}

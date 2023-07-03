@@ -37,6 +37,7 @@
   -webkit-user-select: none;
   -moz-user-select: none;
        user-select: none;
+  cursor: pointer;
 }
 .item .itemContent .customCheckBox .checkmark {
   width: 25px;
