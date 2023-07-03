@@ -1,6 +1,7 @@
 import style from './details.module.scss';
+import Statistics from '../Statistics/Statistics';
 
-export default function Details({ showList }) {
+export default function Details({ showList, setPageOpen }) {
     console.log(showList)
 
     const handleDate = (date) => {
@@ -28,6 +29,7 @@ export default function Details({ showList }) {
         <div className={style.container}>
             <div className={style.content}>
                 <div className={style.top}>
+                    <span onClick={() => setPageOpen('')}>back</span>
                     <h1 className={style.title}>Details</h1>
                 </div>
                 <div className={style.main}>
@@ -44,6 +46,7 @@ export default function Details({ showList }) {
                     </div>
                 </div>
             </div>
+            <Statistics showList={showList} />
         </div>
     )
 }

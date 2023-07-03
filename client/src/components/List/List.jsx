@@ -194,7 +194,6 @@ export default function List({setPageOpen, setContextMenu, setColorPicker, fetch
                 </div>
             </div>
             <p onClick={() => setDndDisable(prevVal => !prevVal)}>activate dnd</p>
-            <p onClick={() => setPageOpen('statistics')}>statistics</p>
             <div className={style.items}>
                 
                 {/* Draggable Part with DND-Kit */}

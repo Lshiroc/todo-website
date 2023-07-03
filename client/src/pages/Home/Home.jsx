@@ -368,10 +368,7 @@ export default function Home() {
                 </nav>
                 <section className={style.listView}>
                     {pageOpen == 'details' ? (
-                        <Details showList={showList} />
-                    ) : 
-                    pageOpen == 'statistics' ? (
-                        <Statistics />
+                        <Details showList={showList} setPageOpen={setPageOpen} />
                     ) : (
                         <List setContextMenu={setContextMenu} setPageOpen={setPageOpen} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
                     )}

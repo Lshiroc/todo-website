@@ -15,4 +15,12 @@ body {
 
 img {
   display: block;
+}
+
+.recharts-sector {
+  outline: none;
+}
+
+.recharts-responsive-container * {
+  outline: none;
 }/*# sourceMappingURL=global.css.map */

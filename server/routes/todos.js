@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const List = require('./../models/list');
+const currListStatistics = require('./../models/currListStatistics');
 
 // Getting all
 router.get('/', async (req, res) => {
@@ -37,8 +38,9 @@ router.post('/:slug', authenticateToken, getList, async (req, res) => {
 
 // Creating new list
 router.post('/', authenticateToken, async (req, res) => {
+    const listSlug = await createSlug(8);
     const list = new List({
-        slug: await createSlug(8),
+        slug: listSlug,
         head: req.body.head,
         description: req.body.description,
         list: req.body.list,
@@ -46,9 +48,19 @@ router.post('/', authenticateToken, async (req, res) => {
         userID: req.body.userID
     });
 
+    const statistic = new currListStatistics({
+        userID: req.body.userID,
+        slug: listSlug,
+        done: req.body.done,
+        pending: req.body.pending,
+        undone: req.body.undone,
+        date: new Date()
+    })
+
     try {
         const newList = await list.save();
-        res.status(201).json(newList);
+        const newStatistic = await statistic.save();
+        res.status(201).json({"lol": newList});
     } catch (err) {
         res.status(400).json({message: err.message});
     }
@@ -71,13 +83,47 @@ router.patch("/:slug", authenticateToken, getList, async (req, res) => {
         description: req.body.description,
     }
 
+    let doneCount = 0;
+    let pendingCount = 0;
+    let undoneCount = 0;
     if(req.body.list) {
         newBody.list = [ ...req.body.list ];
+        newBody.list.map((item) => {
+            switch(item.status) {
+                case "done":
+                    doneCount++;
+                    break;
+                case "pending":
+                    pendingCount++;
+                    break;
+                case "undone":
+                    undoneCount++;
+                    break; 
+            }
+        })
+        newBody["doneCount"] = doneCount;
+        newBody["pendingCount"] = pendingCount;
+        newBody["undoneCount"] = undoneCount;
+    }
+    
+    const prevStatistic = (await currListStatistics.find({ slug: req.params.slug }))[0];
+    
+    let newBody2 = {
+        done: doneCount,
+        pending: pendingCount,
+        undone: undoneCount,
+    }
+    let prevDate = new Date(prevStatistic.date);
+    let currentDate = new Date();
+
+    if((currentDate.getHours() - prevDate.getHours()) <= 12) {
+        newBody2.date = currentDate;
     }
 
-    let newVersion = {...req.body, moderationDate: Date.now()};
+    let newVersion = {...req.body, ...newBody ,moderationDate: Date.now()};
     try {
         const updatedList = await List.findOneAndUpdate({ slug: req.params.slug }, newVersion);
+        const updatedStatistic = await currListStatistics.findOneAndUpdate({ slug: req.params.slug }, newBody2)
         res.json(updatedList);
     } catch (err) {
         res.status(400).json({ message: err.message });

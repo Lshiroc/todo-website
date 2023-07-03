@@ -3,7 +3,8 @@
 }
 
 .top {
-    margin-bottom: 52px;
+    margin-bottom: 42px;
+    padding-top: 60px;
 
     .title {
         font-size: 34px;
@@ -15,6 +16,46 @@
 
 .main {
     .pieChart {
-        height: 400px;
+        width: 350px;
+
+        .labels {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 20px;
+
+            .label {
+                display: flex;
+                align-items: center;
+
+                .number {
+                    font-size: 14px;
+                    font-weight: 600;
+                    line-height: 18px;
+                    padding: 2px 5px;
+                    border-radius: 2px;
+                    color: white;
+
+                    &.done {
+                        background-color: #22c55e;
+                    }
+
+                    &.pending {
+                        background-color: #fbbf24;
+                    }
+
+                    &.undone {
+                        background-color: #ff4242;
+                    }
+                }
+                
+                .text {
+                    font-size: 18px;
+                    margin-left: 6px;
+                }
+            }
+        }
     }
 }

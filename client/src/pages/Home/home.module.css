@@ -5,7 +5,6 @@
 
 .navbar {
   padding: 20px;
-  background: linear-gradient(60deg, #AB92BF 10%, white 64%, #9CFFFA);
   height: 100vh;
   position: relative;
 }
@@ -16,43 +15,350 @@
   right: 0;
   bottom: 0;
   width: 80px;
-  background: linear-gradient(90deg, transparent 10%, white);
 }
 
-.lists .sectionTitle {
-  font-size: 34px;
-  font-weight: 500;
-  line-height: 32px;
-  margin-bottom: 32px;
+.lists .userSection {
+  display: grid;
+  grid-template-columns: auto 30px 30px;
+  align-items: center;
+  -moz-column-gap: 15px;
+       column-gap: 15px;
+  margin-bottom: 40px;
+}
+.lists .userSection .profile {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #71717a;
 }
 .lists .content {
   display: grid;
   grid-template-columns: 100%;
-  row-gap: 20px;
+}
+.lists .content .list {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: grid;
+  grid-template-columns: 20px auto;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+}
+.lists .content .list .color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: white;
+  grid-column: 1/2;
+  grid-row: 1/3;
+}
+.lists .content .list .head {
+  font-size: 18px;
+  color: #27272a;
+  grid-column: 2/3;
+  grid-row: 1/2;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.lists .content .list .description {
+  font-size: 14px;
+  color: #a1a1aa;
+  grid-column: 2/3;
+  grid-row: 2/3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.lists .content .editing {
+  position: relative;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: grid;
+  grid-template-columns: 20px auto;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+}
+.lists .content .editing .color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  color: white;
+  grid-column: 1/2;
+  grid-row: 1/3;
+  cursor: pointer;
+}
+.lists .content .editing .color img {
+  width: 18px;
+}
+.lists .content .editing .colorpicker {
+  position: absolute;
+  padding: 10px 5px;
+  left: 20px;
+  top: 20px;
+  border-radius: 5px;
+  background: #FFF;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  display: none;
+  grid-template-columns: repeat(3, calc(33% - 40px));
+  justify-items: center;
+  justify-content: center;
+  -moz-column-gap: 40px;
+       column-gap: 40px;
+  row-gap: 10px;
+}
+.lists .content .editing .colorpicker.open {
+  display: grid;
+}
+.lists .content .editing .colorpicker .theme {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.lists .content .editing .colorpicker .red {
+  background-color: #ef4444;
+}
+.lists .content .editing .colorpicker .orange {
+  background-color: #f97316;
+}
+.lists .content .editing .colorpicker .amber {
+  background-color: #f59e0b;
+}
+.lists .content .editing .colorpicker .yellow {
+  background-color: #eab308;
+}
+.lists .content .editing .colorpicker .lime {
+  background-color: #84cc16;
+}
+.lists .content .editing .colorpicker .green {
+  background-color: #22c55e;
+}
+.lists .content .editing .colorpicker .emerald {
+  background-color: #10b981;
+}
+.lists .content .editing .colorpicker .teal {
+  background-color: #14b8a6;
+}
+.lists .content .editing .colorpicker .cyan {
+  background-color: #06b6d4;
+}
+.lists .content .editing .colorpicker .sky {
+  background-color: #0ea5e9;
+}
+.lists .content .editing .colorpicker .blue {
+  background-color: #3b82f6;
+}
+.lists .content .editing .colorpicker .indigo {
+  background-color: #6366f1;
+}
+.lists .content .editing .colorpicker .violet {
+  background-color: #8b5cf6;
+}
+.lists .content .editing .colorpicker .purple {
+  background-color: #a855f7;
+}
+.lists .content .editing .colorpicker .fuchsia {
+  background-color: #d946ef;
+}
+.lists .content .editing .colorpicker .pink {
+  background-color: #ec4899;
+}
+.lists .content .editing .colorpicker .rose {
+  background-color: #f43f5e;
+}
+.lists .content .editing .head {
+  font-size: 18px;
+  color: #27272a;
+}
+.lists .content .editing .description {
+  font-size: 14px;
+  color: #a1a1aa;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.lists .content .editing .editInput {
+  border: none;
+  border-bottom: 1px dashed #3f3f46;
+  outline: none;
+  font-size: 18px;
+  color: #27272a;
+}
+.lists .content .addListBtn {
+  width: 100%;
+  padding: 10px 5px;
+  border: 2px solid black;
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+}
+.lists .contextMenu {
+  width: 100px;
+  background-color: #FFF;
+  border-radius: 4px;
+  box-shadow: 6px 8px 15px -3px rgba(0, 0, 0, 0.1), -2px 4px 6px -4px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(4px);
+  content-visibility: hidden;
+  transition: transform 0.2s, opacity 0.2s;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+}
+.lists .contextMenu .option {
+  padding: 4px 8px;
+  position: relative;
+  background-color: #FFF;
+  transition: 0.1s;
+  font-size: 14px;
+  color: #3f3f46;
+  font-weight: 400;
+  cursor: pointer;
+}
+.lists .contextMenu .option.deleteOption {
+  color: #ef4444;
+}
+.lists .contextMenu .option:first-child {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+.lists .contextMenu .option:last-child {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.lists .contextMenu .option:hover {
+  background-color: #f4f4f5;
+}
+.lists .contextMenu .option .innerSelection {
+  width: 220px;
+  background-color: #FFF;
+  border-radius: 0 4px 4px 4px;
+  box-shadow: 6px 8px 15px -3px rgba(0, 0, 0, 0.1), -2px 4px 6px -4px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  transform: translateX(100%);
+  right: 0;
+  top: 0;
+  display: none;
+}
+.lists .contextMenu .option .innerSelection .option {
+  cursor: pointer;
+}
+.lists .contextMenu .option .innerSelection.leftVersion {
+  right: auto;
+  left: 0;
+  transform: translateX(-100%);
+}
+.lists .contextMenu .option.openable:hover .innerSelection {
+  display: block;
+}
+.lists .contextMenu.open {
+  content-visibility: visible;
+  opacity: 1;
+  transform: translateY(0px);
 }
 
 .listView {
   padding: 20px;
 }
 .listView .list .title {
+  background-color: violet;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 5px 10px 5px 0;
+  margin-bottom: 10px;
+}
+.listView .list .title .text {
+  display: inline-block;
   font-size: 34px;
   font-weight: 500;
   line-height: 34px;
+  color: #404040;
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 6px;
+  background-color: #fff;
+  padding: 4px 8px 4px 4px;
+}
+.listView .list .info {
+  display: flex;
+  align-items: center;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+  margin-bottom: 10px;
+}
+.listView .list .info .infoItem {
+  display: inline-flex;
+  align-items: center;
+  -moz-column-gap: 6px;
+       column-gap: 6px;
+  font-size: 14px;
+  color: #737373;
+}
+.listView .list .info .seperator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #d4d4d4;
+}
+.listView .list .description {
+  font-size: 16px;
+  color: #71717a;
   margin-bottom: 32px;
+}
+.listView .list .description .text {
+  font-size: 16px;
+  color: #71717a;
+  display: inline-flex;
+  align-items: center;
+}
+.listView .list .description .text .editBtn {
+  display: inline-block;
+  opacity: 0;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+.listView .list .description .text .editBtn img {
+  display: block;
+  width: 16px;
+  margin-left: 5px;
+}
+.listView .list .description .text:hover .editBtn {
+  opacity: 1;
+}
+.listView .list .description .edit {
+  display: none;
+}
+.listView .list .description .edit .editInput {
+  border: none;
+  border-bottom: 1px dashed black;
+  outline: none;
+  font-size: 16px;
+  color: #27272a;
+}
+.listView .list .description.editing .text {
+  display: none;
+}
+.listView .list .description.editing .edit {
+  display: block;
 }
 .listView .list .items {
   display: grid;
   grid-template-columns: 100%;
-  row-gap: 15px;
   margin-bottom: 32px;
-}
-.listView .list .items .item {
-  display: flex;
-  align-items: center;
-}
-.listView .list .items .item .text {
-  margin-left: 10px;
-  font-size: 18px;
 }
 .listView .list .addItem {
   padding: 2px;

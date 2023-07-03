@@ -24,6 +24,21 @@ const listSchema = new mongoose.Schema({
         required: false,
         default: 0
     },
+    doneCount: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    pendingCount: {
+        type: Number,
+        required: false,
+        default: 0
+    },
+    undoneCount: {
+        type: Number,
+        required: false,
+        default: 0
+    },
     color: {
         type: String,
         required: true,

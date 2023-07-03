@@ -1,0 +1,17 @@
+.content {
+  width: 100%;
+}
+
+.top {
+  margin-bottom: 52px;
+}
+.top .title {
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 32px;
+  color: #27272a;
+}
+
+.main .pieChart {
+  height: 200px;
+}/*# sourceMappingURL=statistics.module.css.map */

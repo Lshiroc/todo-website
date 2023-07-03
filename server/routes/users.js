@@ -47,8 +47,6 @@ router.post('/register', async (req, res) => {
 
 // Check Token
 router.post('/verifytoken', authenticateToken, async (req, res) => {
-    const token = req.body.token;
-    
     try {
         res.status(200).json(req.user);
     } catch (err) {

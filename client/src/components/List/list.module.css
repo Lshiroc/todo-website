@@ -1,0 +1,102 @@
+.list .title {
+  background-color: violet;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  padding: 5px 10px 5px 0;
+  margin-bottom: 10px;
+}
+.list .title .text {
+  display: inline-block;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 34px;
+  color: #404040;
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 6px;
+  background-color: #fff;
+  padding: 4px 8px 4px 4px;
+}
+.list .info {
+  display: flex;
+  align-items: center;
+  -moz-column-gap: 10px;
+       column-gap: 10px;
+  margin-bottom: 10px;
+}
+.list .info .infoItem {
+  display: inline-flex;
+  align-items: center;
+  -moz-column-gap: 6px;
+       column-gap: 6px;
+  font-size: 14px;
+  color: #737373;
+}
+.list .info .seperator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #d4d4d4;
+}
+.list .description {
+  font-size: 16px;
+  color: #71717a;
+  margin-bottom: 32px;
+}
+.list .description .text {
+  font-size: 16px;
+  color: #71717a;
+  display: inline-flex;
+  align-items: center;
+}
+.list .description .text .editBtn {
+  display: inline-block;
+  opacity: 0;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+.list .description .text .editBtn img {
+  display: block;
+  width: 16px;
+  margin-left: 5px;
+}
+.list .description .text:hover .editBtn {
+  opacity: 1;
+}
+.list .description .edit {
+  display: none;
+}
+.list .description .edit .editInput {
+  border: none;
+  border-bottom: 1px dashed black;
+  outline: none;
+  font-size: 16px;
+  color: #27272a;
+}
+.list .description.editing .text {
+  display: none;
+}
+.list .description.editing .edit {
+  display: block;
+}
+.list .items {
+  display: grid;
+  grid-template-columns: 100%;
+  margin-bottom: 32px;
+}
+.list .addItem {
+  padding: 2px;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23ABA6A6' stroke-width='4' stroke-dasharray='10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-radius: 8px;
+}
+.list .addItem input {
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  padding: 10px 15px;
+  font-size: 19px;
+  font-family: inherit;
+}/*# sourceMappingURL=list.module.css.map */

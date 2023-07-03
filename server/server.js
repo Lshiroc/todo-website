@@ -22,4 +22,7 @@ const loginRouter = require('./routes/login');
 app.use('/login', loginRouter);
 app.use(cors());
 
+const statisticsRouter = require('./routes/statistics');
+app.use('/statistics', statisticsRouter);
+
 app.listen(PORT, () => console.log(`Server is up on http://127.0.0.1:${PORT}`));
