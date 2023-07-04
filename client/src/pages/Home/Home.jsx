@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import List from './../../components/List/List';
 import Details from './../../components/Details/Details';
-import Statistics from './../../components/Statistics/Statistics';
 
+import moreIcon from './../../assets/icons/more.svg';
 import editIcon from './../../assets/icons/edit2.svg';
 
 export default function Home() {
@@ -16,6 +16,7 @@ export default function Home() {
     const [colorPicker, setColorPicker] = useState({open: false, color: ""});
     const [isEditing, setIsEditing] = useState(false);
     const [pageOpen, setPageOpen] = useState('');
+    const [moreSection, setMoreSection] = useState(false);
     const navigate = useNavigate();
     const listCount = Number(localStorage.getItem('listCount')) || 3;
     const listPreviewArr = Array(listCount).fill("1");
@@ -252,6 +253,10 @@ export default function Home() {
         } else {
             navigate('/login', { replace: true });
         }
+
+        window.addEventListener("click", () => {
+            setMoreSection(false);
+        })
     }, [])
 
     /* 
@@ -275,6 +280,12 @@ export default function Home() {
             setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
             setCurrentItem({slug: "", open: false});
         }
+    }
+
+    // Log Out
+    const logOut = () => {
+        localStorage.clear();
+        navigate('/login');
     }
 
     useEffect(() => {
@@ -310,8 +321,12 @@ export default function Home() {
                     <div className={style.lists}>
                         <div className={style.userSection}>
                             <div className={style.profile}></div>
-                            <div className={style.item}>item</div>
-                            <div className={style.item}>item</div>
+                            <div className={style.item} onClick={(e) => {e.stopPropagation(); setMoreSection(prevVal => !prevVal)}}>
+                                <img src={moreIcon} alt="More" draggable="false" />
+                                <div className={`${style.moreSection} ${moreSection && style.open}`} onClick={(e) => e.stopPropagation()}>
+                                    <div className={style.option} onClick={() => logOut()}>Log out</div>
+                                </div>
+                            </div>
                         </div>
                         
                         {/* Lists */}

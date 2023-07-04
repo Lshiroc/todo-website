@@ -256,7 +256,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
                     <div className={`${style.option} ${style.deleteOption}`} onClick={() => deleteItem(props.slug)}>Delete</div>
                     <div className={`${style.option} ${style.openable}`} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}}>
                         <p>Move to</p>
-                        <div className={`${style.innerSelection} ${!contextMenu.x ? style.leftVersion : window.innerWidth - contextMenu.x <= 400 && style.leftVersion}`}>
+                        <div className={`${style.innerSelection} ${!contextMenu.x ? style.leftVersion : window.innerWidth - 300 - contextMenu.x <= 400 && style.leftVersion}`}>
                             {
                                 allData.map((list, index) => (
                                     list.slug !== listSlug && <div key={index} className={style.option} onClick={() => {moveItem(list.slug)}}>{list.head}</div>
