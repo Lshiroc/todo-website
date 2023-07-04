@@ -3,13 +3,11 @@ import { useState, useEffect } from 'react';
 import { useSortable } from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import dragIcon from './../../assets/icons/drag-icon.svg';
-// import maruIcon from './../../assets/icons/maru.svg';
-// import batsuIcon from './../../assets/icons/batsu.svg';
-// import sankakuIcon from './../../assets/icons/sankaku.svg';
 import done from './../../assets/icons/done.svg';
 import cross from './../../assets/icons/cross.svg';
 import waiting from './../../assets/icons/waiting.svg';
 import moreIcon from './../../assets/icons/more.svg';
+import editIcon from './../../assets/icons/edit.svg';
 
 export default function ListItem({props, allData, fetchHeads, listSlug, setSlowCollectedData, slowCollectedData, setCurrentItem, currentItem, setShowList, showList, dndDisable}) {
     const [contextMenu, setContextMenu] = useState({x: null, y: null, slug: '', open: false, operation: null});
@@ -234,14 +232,15 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
     return (
         <div ref={setNodeRef} data-no-dnd="true" style={style2} className={style.item} onContextMenu={(e) => {e.preventDefault(); e.stopPropagation(); setContextMenu({x: e.clientX - e.currentTarget.getBoundingClientRect().left , y: e.clientY - e.currentTarget.getBoundingClientRect().top, slug: props.slug, open: true, operation: null}); setCurrentItem({slug: props.slug, open: true})}}>
             <div className={`${style.itemContent} ${contextMenu.operation == "edit" && contextMenu.slug == props.slug && style.editVersion}`}>
-                <span {...attributes} {...listeners} className={`${style.customCheckBox} ${style[props.status]} ${!dndDisable && style.dndActive}`} onClick={() => {dndDisable && updateStatus(props.status)}}>
+                <span {...attributes} {...listeners} className={`${style.customCheckBox} ${style[props.status]} ${!dndDisable && style.dndActive} ${contextMenu.operation == "edit" && style.editing}`} onClick={() => {dndDisable && updateStatus(props.status)}}>
                     <img src={done} alt="Done" className={`${style.checkmark} ${style.maru}`} draggable="false" />
                     <img src={cross} alt="Undone" className={`${style.checkmark} ${style.batsu}`} draggable="false" />
                     <img src={waiting} alt="Pending" className={`${style.checkmark} ${style.sankaku}`} draggable="false" />
                     <img src={dragIcon} alt="Drag" className={`${style.checkmark} ${style.dndIcon}`} draggable="false" />
+                    <img src={editIcon} alt="Editing" className={`${style.checkmark} ${style.editIcon}`} draggable="false" onClick={(e) => e.stopPropagation()} onContextMenu={(e) => e.stopPropagation()} />
                 </span>
                 <label className={style.text}>{props.text}</label>
-                {contextMenu.operation == "edit" && contextMenu.slug == props.slug && <input className={style.editInput} defaultValue={props.text} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedText(e);}} />}
+                {contextMenu.operation == "edit" && contextMenu.slug == props.slug && <input className={style.editInput} defaultValue={props.text} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedText(e);}} onContextMenu={(e) => e.stopPropagation()} />}
             </div>
             <div className={style.moreContainer} style={{position: contextMenu.x != null ? "unset" : "relative"}}>
                 

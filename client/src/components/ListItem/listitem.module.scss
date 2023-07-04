@@ -4,6 +4,7 @@
     justify-content: space-between;
     padding-top: 10px;
     padding-bottom: 10px;
+    position: relative;
 
     .dragBtn {
         padding: 5px;
@@ -44,12 +45,17 @@
                 width: 25px;
             }
 
-            .maru, .batsu, .sankaku, .dndIcon {
+            .maru, .batsu, .sankaku, .dndIcon, .editIcon {
                 position: absolute;
                 display: block;
                 opacity: 0;
                 transition: 0.3s;
                 transform: scale(0.7);
+                z-index: 1;
+            }
+
+            .editIcon {
+                z-index: -1;
             }
 
             .sankaku {
@@ -90,6 +96,19 @@
                 .dndIcon {
                     opacity: 1;
                     transform: scale(1);
+                }
+            }
+
+            &.editing {
+                .maru, .batsu, .sankaku {
+                    opacity: 0 !important;
+                    transform: scale(0.7) !important;
+                }
+
+                .editIcon {
+                    opacity: 1 !important;
+                    transform: scale(1);
+                    z-index: 1;
                 }
             }
         }

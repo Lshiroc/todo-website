@@ -301,7 +301,6 @@ export default function Home() {
 
     useEffect(() => {
         localStorage.setItem('listCount', data.length);
-        console.log(Array(Number(localStorage.getItem('listCount'))).fill("1"), Array(Number(listCount)).fill("1"));
     }, [data])
 
     return (
@@ -347,7 +346,7 @@ export default function Home() {
                                         </div>
                                     </div>
                                     :
-                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={`${style.list} ${showList.slug == list.slug && style.current}`}>
+                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug); setPageOpen('')}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={`${style.list} ${showList.slug == list.slug && style.current}`}>
                                         <div slug={list.slug} className={style.color} style={{backgroundColor: list.color}}>{list.count}</div>
                                         <div slug={list.slug} className={style.head}>{list.head}</div>
                                         <div slug={list.slug} className={style.description}>{list.description}</div>
@@ -375,7 +374,7 @@ export default function Home() {
                                     }
                                 </div>
                             </div>
-                            <div className={style.option} onClick={() => setPageOpen('details')}>Detail</div>
+                            <div className={style.option} onClick={() => {setPageOpen('details'); fetchList(contextMenu.slug); setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null})}}>Detail</div>
                         </div>
                     </div>
                 </nav>

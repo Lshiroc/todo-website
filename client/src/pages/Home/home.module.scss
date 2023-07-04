@@ -146,11 +146,11 @@
             transition: 0.1s;
 
             &.current {
-                background-color: #e7e5e4;
+                background-color: #e7e5e4 !important;
             }
 
             &:hover {
-                background-color: #e7e5e4;
+                background-color: #f4f4f5;
             }
 
             .color {
@@ -358,6 +358,7 @@
         transition:  transform 0.2s, opacity 0.2s;
         -webkit-user-select: none;
         user-select: none;
+        z-index: 2;
 
         .option {
             padding: 4px 8px;
@@ -426,6 +427,7 @@
 
 .listView {
     padding: 20px;
+    position: relative;
 
     .list {
         .title {

@@ -1,5 +1,5 @@
 import style from './list.module.scss';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import ListItem from './../../components/ListItem/ListItem.jsx';
 import editIcon from './../../assets/icons/edit2.svg';
 import dragIcon from './../../assets/icons/drag-icon.svg';
@@ -19,7 +19,7 @@ import {
 } from '@dnd-kit/sortable';
 
 
-export default function List({setPageOpen, setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
+export default function List({setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
 
     // Settings to make DND-kit clickable
     const sensors = useSensors(
@@ -166,6 +166,9 @@ export default function List({setPageOpen, setContextMenu, setColorPicker, fetch
         setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
         setColorPicker({open: false, color: ""});
     }
+    useEffect(() => {
+        setIsEditing(false);
+    }, [showList])
 
     return (
         <div className={style.list}>
@@ -191,7 +194,7 @@ export default function List({setPageOpen, setContextMenu, setColorPicker, fetch
                     </div>
                 </div>
                 <div className={style.edit}>
-                    <input defaultValue={showList.description} className={style.editInput} onKeyDown={(e) => e.key == "Enter" && saveEditedDescription(e)} />
+                    <input key={showList.description} defaultValue={showList.description} className={style.editInput} onKeyDown={(e) => e.key == "Enter" && saveEditedDescription(e)} />
                 </div>
             </div>
             <div className={`${style.dragBtn} ${!dndDisable && style.active}`} onClick={() => setDndDisable(prevVal => !prevVal)}>

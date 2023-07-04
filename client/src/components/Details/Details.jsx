@@ -29,7 +29,7 @@ export default function Details({ showList, setPageOpen }) {
         <div className={style.container}>
             <div className={style.content}>
                 <div className={style.top}>
-                    <span onClick={() => setPageOpen('')}>back</span>
+                    <span className={style.backBtn} onClick={() => setPageOpen('')}></span>
                     <h1 className={style.title}>Details</h1>
                 </div>
                 <div className={style.main}>
