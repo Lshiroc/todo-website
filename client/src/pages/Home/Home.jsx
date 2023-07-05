@@ -1,411 +1,240 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import style from './home.module.scss';
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import List from './../../components/List/List';
-import Details from './../../components/Details/Details';
-
-import moreIcon from './../../assets/icons/more.svg';
-import editIcon from './../../assets/icons/edit2.svg';
+import done from './../../assets/icons/done.svg';
+import cross from './../../assets/icons/cross.svg';
+import waiting from './../../assets/icons/waiting.svg';
 
 export default function Home() {
-    const [data, setData] = useState([]);
-    const [showList, setShowList] = useState({list: []});
-    const [currentItem, setCurrentItem] = useState({slug: "", open: false});
-    const [contextMenu, setContextMenu] = useState({x: null, y: null, slug: "", element: "", open: false, operation: null});
-    const [dndDisable, setDndDisable] = useState(true);
-    const [colorPicker, setColorPicker] = useState({open: false, color: ""});
-    const [isEditing, setIsEditing] = useState(false);
-    const [pageOpen, setPageOpen] = useState('');
-    const [moreSection, setMoreSection] = useState(false);
-    const navigate = useNavigate();
-    const listCount = Number(localStorage.getItem('listCount')) || 3;
-    const listPreviewArr = Array(listCount).fill("1");
+    const [items, setItems] = useState([
+        {id: "1", status: "done", text: "Keep Doin' It while your plans are organized"},
+        {id: "2", status: "pending", text: "Change your way of thinking"},
+        {id: "3", status: "undone", text: "Don't forget to touch some grass"},
+    ]);
 
-    /*
-        slowCollectedData - state will be updated whenever new information fetched,
-        this way if we want to get the past data that we have visited,
-        we won't need to refetch it from API, instead it will be 
-        using it from 'slowCollectedData'
-    */
-    const [slowCollectedData, setSlowCollectedData] = useState({});
-
-    // Fetch List when demanded
-    const fetchList = (listSlug) => {
-        console.log("fetcching", listSlug)
-        if(Object.hasOwn(slowCollectedData, listSlug)) {
-            console.log("cached", slowCollectedData[listSlug]);
-            setShowList(slowCollectedData[listSlug]);
-        } else {
-            let request = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authorization': localStorage.getItem('token')
+    const changeStatus = (id, status) => {
+        let tempItems = items;
+        
+        tempItems.map((item) => {
+            if(item.id == id) {
+                switch(status) {
+                    case "done":
+                        item["status"] = "undone";
+                        break;
+                    case "pending":
+                        item["status"] = "done";
+                        break;
+                    case "undone":
+                        item["status"] = "pending";
                 }
             }
-
-            fetch(`http://127.0.0.1:8000/todos/${listSlug}`, request)
-                .then(resp => resp.json())
-                .then(data => {
-                    setShowList(data[0]);
-                    let tempData = slowCollectedData;
-                    tempData[listSlug] = data[0];
-                    setSlowCollectedData({...tempData});
-                })
-                .catch(err => console.error(err));
-
-            console.log("fetched and added to cache")
-        }
-
-    }
-
-    // Delete List
-    const deleteList = (listSlug) => {
-        const newBody = {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-                'authorization': localStorage.getItem('token')
-            }
-        }
-
-        fetch(`http://127.0.0.1:8000/todos/${listSlug}`, newBody)
-            .then(resp => resp.json())
-            .then(data => fetchHeads())
-            .catch(err => console.error(err));
-    }
-
-    // Save Edited List title
-    const saveEditedList = (e, list, defaultColor) => {
-        const newBody = {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                'authorization': localStorage.getItem('token')
-            },
-            body: JSON.stringify({
-                head: e.target.value.trim(),
-                description: list.description,
-                color: colorPicker.color == "" ? defaultColor : colorPicker.color
-            })
-        }
-
-        fetch(`http://127.0.0.1:8000/todos/${list.slug}`, newBody)
-            .then(resp => resp.json())
-            .then(data => fetchHeads())
-            .catch(err => console.error(err));
-
-        if(slowCollectedData[list.slug]) {
-            let newData = {...slowCollectedData};
-            newData[list.slug] = {...newData[list.slug], ...JSON.parse(newBody.body)};
-            console.log("list title updated", newData)
-            setSlowCollectedData(newData);
-        }
-        setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
-        setColorPicker({open: false, color: ""});
-    }
-
-    // Fetch heads
-    const fetchHeads = () => {
-        let request = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': localStorage.getItem('token')
-            }
-        }
-
-        fetch(`http://127.0.0.1:8000/todos/heads`, request)
-        .then(resp => resp.json())
-        .then(data => setData(data))
-        .catch(err => console.error(err));
-    }
-
-    // Create new list
-    const createNewList = () => {
-        const newBody = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "authorization": localStorage.getItem('token')
-            },
-            body: JSON.stringify({
-                head: "New List",
-                description: "description for list",
-                list: [],
-                count: 0,
-                color: "#22c55e",
-                userID: localStorage.getItem('userID')
-            })
-        }
-
-        fetch('http://127.0.0.1:8000/todos/', newBody)
-            .then(resp => resp.json())
-            .then(data => fetchHeads())
-            .catch(err => console.error(err));
-    }
-
-    // Transfer List to another List
-    const transferListTo = async (fromSlug, toSlug) => {
-        // Fetching the Lists if they are not in the cache
-        const fetchAll = async () => {
-            let needToFetch = [];
-            let tempData = slowCollectedData;
-
-            if(!slowCollectedData[fromSlug]) {
-                needToFetch.push(`http://127.0.0.1:8000/todos/${fromSlug}`);
-            }
-            if(!slowCollectedData[toSlug]) {
-                needToFetch.push(`http://127.0.0.1:8000/todos/${toSlug}`);
-            }
-
-            try {
-                let res = await Promise.all(needToFetch.map((e) => fetch(e)));
-                let resJson = await Promise.all(res.map((e) => e.json()));
-                resJson.map((list) => {
-                    if(list[0].slug == fromSlug) {
-                        tempData[fromSlug] = list[0];
-                    }
-                    if(list[0].slug == toSlug) {
-                        tempData[toSlug] = list[0];
-                    }
-                })
-                return tempData;
-            } catch(err) {
-                console.error(err);
-            }
-
-            return false;
-        }
-
-        // Editing and saving the final version, and caching
-        const transfer = async (data) => {
-            let tempData = await data;
-            let tempItems = await tempData[toSlug];
-            let transferedItems = await tempData[fromSlug];
-
-            if(tempItems.list.length > 0) {
-                tempItems.list = [...tempItems.list, ...transferedItems.list];
-            } else {
-                tempItems.list = [...transferedItems.list];
-            }
-
-            let newBody = {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    'authorization': localStorage.getItem('token')
-                },
-                body: JSON.stringify({
-                    ...tempItems,
-                    count: tempItems.list.length
-                })
-            }
-
-            let newData = tempData;
-            newData[toSlug] = {...tempItems};
-            newData[toSlug]["count"] = tempItems.list.length;
-            setShowList(newData[toSlug]);
-            setSlowCollectedData(newData);
-
-            fetch(`http://127.0.0.1:8000/todos/${toSlug}`, newBody)
-                .then(resp => resp.json())
-                .then(data => console.log(data))
-                .catch(err => console.error(err));
-
-            deleteList(fromSlug);
-            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
-            console.log("transferred and cached");
-        }
-
-        transfer(await fetchAll());
-    }
-
-    // Checking Token
-    const checkToken = async () => {
-        const token = localStorage.getItem('token');
-
-        let requestBody = {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-                'authorization': token
-            }
-        }
-
-        let loginData;
-
-        loginData = await fetch('http://127.0.0.1:8000/users/verifytoken', requestBody)
-            .then(resp => resp.json())
-            .then(data => data)
-            .catch(err => console.error(err));
-
-        localStorage.setItem("userID", loginData.userID);
-        
-    }
-
-    // Initial List fetch on page load
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        if(token) {
-            checkToken();
-            fetchHeads();
-        } else {
-            navigate('/login', { replace: true });
-        }
-
-        window.addEventListener("click", () => {
-            setMoreSection(false);
         })
-    }, [])
 
-    /* 
-        Setting a global event to close
-        context-menu or "more" menu when clicked
-        outside of menu frame
-    */
-    const handleContext = (e) => {
-        let listSlug = e.target.getAttribute("slug");
-        if(listSlug) {
-            setContextMenu({x: e.pageX, y: e.pageY, slug: listSlug, open: true, operation: null});
-            setColorPicker({open: false, color: ""});
-        } else {
-            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
-            setCurrentItem({slug: "", open: false});
-        }
+        setItems([...tempItems]);
     }
-
-    const handleContextClick = () => {
-        if(contextMenu.open || currentItem.slug != "" || currentItem.open) {
-            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
-            setCurrentItem({slug: "", open: false});
-        }
-    }
-
-    // Log Out
-    const logOut = () => {
-        localStorage.clear();
-        navigate('/login');
-    }
-
-    useEffect(() => {
-        window.addEventListener("click", handleContextClick);
-        window.addEventListener("contextmenu", handleContext);
-
-        return () => {
-            window.removeEventListener("click", handleContextClick);
-            window.removeEventListener("contextmenu", handleContext);
-        }
-    }, [contextMenu, currentItem])
-
-    useEffect(() => {
-        if(currentItem.open || currentItem.slug != "") {
-            setContextMenu({x: null, y: null, slug: "", open: false, operation: null});
-        }
-    }, [currentItem])
-
-    useEffect(() => {
-        if(slowCollectedData[showList.slug]) {
-            setShowList(slowCollectedData[showList.slug]);
-        }
-    }, [slowCollectedData])
-
-    useEffect(() => {
-        localStorage.setItem('listCount', data.length);
-    }, [data])
 
     return (
         <>
+            <nav className={style.navbar}>
+                <div className={style.container}>
+                    <div className={style.logo}>Doin' It!</div>
+                </div>
+            </nav>
             <main className={style.main}>
-                <nav className={style.navbar}>
-                    <div className={style.lists}>
-                        <div className={style.userSection}>
-                            <div className={style.profile}></div>
-                            <div className={style.item} onClick={(e) => {e.stopPropagation(); setMoreSection(prevVal => !prevVal)}}>
-                                <img src={moreIcon} alt="More" draggable="false" />
-                                <div className={`${style.moreSection} ${moreSection && style.open}`} onClick={(e) => e.stopPropagation()}>
-                                    <div className={style.option} onClick={() => logOut()}>Log out</div>
+                <div className={style.content}>
+                    {
+                        items.map((item) => (
+                            <a key={item.id} className={style.item} onClick={() => changeStatus(item.id, item.status)}>
+                                <div className={style.itemContent}>
+                                    <span className={`${style.customCheckBox} ${style[item.status]}`}>
+                                        <img src={done} alt="Done" className={`${style.checkmark} ${style.maru}`} draggable="false" />
+                                        <img src={cross} alt="Undone" className={`${style.checkmark} ${style.batsu}`} draggable="false" />
+                                        <img src={waiting} alt="Pending" className={`${style.checkmark} ${style.sankaku}`} draggable="false" />
+                                    </span>
+                                    <label className={style.text}>{item.text}</label>
                                 </div>
-                            </div>
+                            </a>
+                        ))
+                    }
+                </div>
+                <Link to="/login" className={style.btn}>Get Started</Link>
+                <div className={`${style.backgroundGrids} ${style.first}`}>
+                    <div className={style.grid}>
+                        <div className={style.top}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
                         </div>
-                        
-                        {/* Lists */}
-                        <div className={style.content}>
-                            {
-                                data[0]?.head ? data.map((list, index) => (
-                                    contextMenu.slug == list.slug && contextMenu.element == "list" && contextMenu.operation == "edit" ?
-                                    <div key={index} className={style.editing}>
-                                        <div className={style.color} style={{backgroundColor: colorPicker.color == "" ? list.color : colorPicker.color}} onClick={() => setColorPicker({...colorPicker, open: !colorPicker.open})}>
-                                            <img src={editIcon} alt="Edit color" />
-                                        </div>
-                                        <input className={style.editInput} defaultValue={list.head} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedList(e, list, list.color);}} />
-                                        <div className={style.description}>{list.description}</div>
-                                        <div className={`${style.colorpicker} ${colorPicker.open && style.open}`}>
-                                            <div className={`${style.theme} ${style.red}`} onClick={() => {setColorPicker({open: false, color: "#ef4444"})}}></div>
-                                            <div className={`${style.theme} ${style.orange}`} onClick={() => {setColorPicker({open: false, color: "#f97316"})}}></div>
-                                            <div className={`${style.theme} ${style.amber}`} onClick={() => {setColorPicker({open: false, color: "#f59e0b"})}}></div>
-                                            <div className={`${style.theme} ${style.yellow}`} onClick={() => {setColorPicker({open: false, color: "#eab308"})}}></div>
-                                            <div className={`${style.theme} ${style.lime}`} onClick={() => {setColorPicker({open: false, color: "#84cc16"})}}></div>
-                                            <div className={`${style.theme} ${style.green}`} onClick={() => {setColorPicker({open: false, color: "#22c55e"})}}></div>
-                                            <div className={`${style.theme} ${style.emerald}`} onClick={() => {setColorPicker({open: false, color: "#10b981"})}}></div>
-                                            <div className={`${style.theme} ${style.teal}`} onClick={() => {setColorPicker({open: false, color: "#14b8a6"})}}></div>
-                                            <div className={`${style.theme} ${style.cyan}`} onClick={() => {setColorPicker({open: false, color: "#06b6d4"})}}></div>
-                                            <div className={`${style.theme} ${style.sky}`} onClick={() => {setColorPicker({open: false, color: "#0ea5e9"})}}></div>
-                                            <div className={`${style.theme} ${style.blue}`} onClick={() => {setColorPicker({open: false, color: "#3b82f6"})}}></div>
-                                            <div className={`${style.theme} ${style.indigo}`} onClick={() => {setColorPicker({open: false, color: "#6366f1"})}}></div>
-                                            <div className={`${style.theme} ${style.violet}`} onClick={() => {setColorPicker({open: false, color: "#8b5cf6"})}}></div>
-                                            <div className={`${style.theme} ${style.purple}`} onClick={() => {setColorPicker({open: false, color: "#a855f7"})}}></div>
-                                            <div className={`${style.theme} ${style.fuchsia}`} onClick={() => {setColorPicker({open: false, color: "#d946ef"})}}></div>
-                                            <div className={`${style.theme} ${style.pink}`} onClick={() => {setColorPicker({open: false, color: "#ec4899"})}}></div>
-                                            <div className={`${style.theme} ${style.rose}`} onClick={() => {setColorPicker({open: false, color: "#f43f5e"})}}></div>
-                                        </div>
-                                    </div>
-                                    :
-                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug); setPageOpen('')}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={`${style.list} ${showList.slug == list.slug && style.current}`}>
-                                        <div slug={list.slug} className={style.color} style={{backgroundColor: list.color}}>{list.count}</div>
-                                        <div slug={list.slug} className={style.head}>{list.head}</div>
-                                        <div slug={list.slug} className={style.description}>{list.description}</div>
-                                    </div>                                    
-                                )) : listPreviewArr.map((item, index) => (
-                                        <div key={index} className={style.loadingItem}>
-                                            <div className={style.color}><div className={style.load}></div></div>
-                                            <div className={style.head}><div className={style.load}></div></div>
-                                            <div className={style.description}><div className={style.load}></div></div>
-                                        </div>
-                                    ))
-                            }
-                            <div className={style.addListBtn} onClick={() => createNewList()}>Add List</div>
-                        </div>
-                        <div className={`${style.contextMenu} ${contextMenu.open && style.open}`} onClick={(e) => e.stopPropagation()} style={{top: contextMenu.y ? contextMenu.y : 'auto', left: contextMenu.x ? contextMenu.x : 'auto'}}>
-                            <div className={style.option} onClick={() => {setContextMenu({x: null, y: null, slug: contextMenu.slug, element: "list", open: false, operation: "edit"})}}>Edit</div>
-                            <div className={`${style.option} ${style.deleteOption}`} onClick={() => {deleteList(contextMenu.slug); setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null})}}>Delete</div>
-                            <div className={`${style.option} ${style.openable}`}>
-                                <p>Transfer to</p>
-                                <div className={`${style.innerSelection}`}>
-                                    {
-                                        data.map((list, index) => (
-                                            list.slug !== contextMenu.slug && <div key={index} className={style.option} onClick={() => {transferListTo(contextMenu.slug, list.slug)}}>{list.head}</div>
-                                        ))
-                                    }
-                                </div>
-                            </div>
-                            <div className={style.option} onClick={() => {setPageOpen('details'); fetchList(contextMenu.slug); setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null})}}>Detail</div>
+                        <div className={style.left}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
                         </div>
                     </div>
-                </nav>
-                <section className={style.listView}>
-                    {pageOpen == 'details' ? (
-                        <Details showList={showList} setPageOpen={setPageOpen} />
-                    ) : 
-                    showList.slug ? (
-                        <List setContextMenu={setContextMenu} setPageOpen={setPageOpen} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
-                    ) : (
-                        <div className={style.blank}>
-                            <div className={style.text}>Not displaying a List</div>
+                </div>
+                <div className={`${style.backgroundGrids} ${style.second}`}>
+                    <div className={style.grid}>
+                        <div className={style.top}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
                         </div>
-                    )}
-                </section>
-            </main>
+                        <div className={style.left}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                        </div>
+                    </div>
+                </div>
+                <div className={`${style.backgroundGrids} ${style.third}`}>
+                    <div className={style.grid}>
+                        <div className={style.top}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                        </div>
+                        <div className={style.left}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                        </div>
+                    </div>
+                </div>
+                <div className={`${style.backgroundGrids} ${style.fourth}`}>
+                    <div className={style.grid}>
+                        <div className={style.top}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                        </div>
+                        <div className={style.left}>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                            <div className={style.stroke}></div>
+                        </div>
+                    </div>
+                </div>
+           </main>
         </>
     )
 }
