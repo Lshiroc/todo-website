@@ -1,19 +1,26 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import style from './login.module.scss';
+import validator from 'validator';
+import style from './register.module.scss';
 
-export default function Login() {
+export default function Register() {
     const [error, setError] = useState("");
     const usernameInput = useRef();
+    const emailInput = useRef();
     const passwordInput = useRef();
     const navigate = useNavigate();
 
     const handleLogin = async () => {
-        if(usernameInput.current.value.length == 0 || passwordInput.current.value.length == 0) {
+        if(usernameInput.current.value.length == 0 || passwordInput.current.value.length == 0 || emailInput.current.value.length == 0) {
             setError("*Fields are empty");
             return false;  
         } else {
             setError("");
+        }
+
+        if(!validator.isEmail(emailInput.current.value)) {
+            setError("*Email is incorrect");
+            return false;
         }
 
         const requestBody = {
@@ -23,43 +30,46 @@ export default function Login() {
             },
             body: JSON.stringify({
                 username: usernameInput.current.value,
+                mail: emailInput.current.value,
                 password: passwordInput.current.value
             })
         }
 
         let loginData;
 
-        loginData = await fetch('http://127.0.0.1:8000/users/login', requestBody)
+        loginData = await fetch('http://127.0.0.1:8000/users/register', requestBody)
             .then(resp => resp.json())
             .then(data => data)
             .catch(err => setError("*Information is wrong"));
-        if(loginData.accessToken) {
-            localStorage.setItem("token", loginData.accessToken);
-            localStorage.setItem("username", usernameInput.current.value);
-            localStorage.setItem("userID", loginData.userID);
-            navigate('/dashboard', { replace: true });
+        if(loginData.userID) {
+            navigate('/login', { replace: true });
         }
 
         usernameInput.current.value = "";
+        emailInput.current.value = "";
         passwordInput.current.value = "";
     }
 
     return (
         <>
             <main className={style.main}>
-                <h1 className={style.title}>Login</h1>
+                <h1 className={style.title}>Register</h1>
                 <div className={style.content}>
                     <div className={style.item}>
                         <label className={style.label}>Username:</label>
                         <input type="text" autoComplete='off' name="username" ref={usernameInput} placeholder='xXx_Destroyer_xXx' />
                     </div>
                     <div className={style.item}>
+                        <label className={style.label}>Email:</label>
+                        <input type="text" autoComplete='off' name="email" ref={emailInput} placeholder='xxxdestroyerxxx@gmail.com' />
+                    </div>
+                    <div className={style.item}>
                         <label className={style.label}>Password:</label>
                         <input type="password" name="password" ref={passwordInput} placeholder='**********' />
                         <p className={style.error}>{error}</p>
                     </div>
-                    <button class={style.loginBtn} onClick={() => handleLogin()}>Login</button>
-                    <Link class={style.register} to="/register">Haven't registered?</Link>
+                    <button className={style.loginBtn} onClick={() => handleLogin()}>Login</button>
+                    <Link className={style.register} to="/login">Already registered?</Link>
                 </div>
             </main>
         </>
