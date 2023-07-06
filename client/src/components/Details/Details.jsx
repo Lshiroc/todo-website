@@ -2,8 +2,6 @@ import style from './details.module.scss';
 import Statistics from '../Statistics/Statistics';
 
 export default function Details({ showList, setPageOpen }) {
-    console.log(showList)
-
     const handleDate = (date) => {
         let tempDate = new Date(date);
         let formattedDate = "";
