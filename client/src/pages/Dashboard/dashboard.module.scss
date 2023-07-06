@@ -119,10 +119,24 @@
 
     .content {
         padding: 10px 15px;
-        display: grid;
-        grid-template-columns: 100%;
+        display: flex;
+        flex-direction: column;
         row-gap: 10px;
+        height: calc(100vh - 85px);
+        overflow-y: auto;
 
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #e5e7eb;
+            border-radius: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: #d4d4d8;
+        }
                 
         .loadingItem {
             padding: 10px 8px;
@@ -648,10 +662,48 @@
         justify-content: center;
         align-items: center;
 
+        .menuBtn {
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
         .text {
             font-size: 26px;
             font-weight: 600;
-
         }
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .navbar {
+        position: absolute;
+        transform: translateX(-100%);
+        transition: 0.3s;
+        background-color: white;
+        z-index: 2;
+
+        &.open {
+            transform: translateX(0);
+        }
+    }
+
+    .listView {
+        width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .main {
+        display: block;
+    }
+
+    .navbar {
+        width: 100%;
     }
 }

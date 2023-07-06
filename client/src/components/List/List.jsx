@@ -3,6 +3,8 @@ import { useRef, useEffect } from 'react';
 import ListItem from './../../components/ListItem/ListItem.jsx';
 import editIcon from './../../assets/icons/edit2.svg';
 import dragIcon from './../../assets/icons/drag-icon.svg';
+import menuIcon from './../../assets/icons/menu.svg';
+import closeIcon from './../../assets/icons/close.svg';
 
 import {
     DndContext,
@@ -19,7 +21,7 @@ import {
 } from '@dnd-kit/sortable';
 
 
-export default function List({setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
+export default function List({setIsMenuOpen, setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
 
     // Settings to make DND-kit clickable
     const sensors = useSensors(
@@ -172,9 +174,12 @@ export default function List({setContextMenu, setColorPicker, fetchHeads, setSlo
 
     return (
         <div className={style.list}>
-            <h1 className={style.title} style={{backgroundColor: showList.color}}>
+            <div className={style.title} style={{backgroundColor: showList.color}}>
                 <p className={style.text}>{showList.head}</p>
-            </h1>
+                <div className={style.menuBtn} onClick={() => setIsMenuOpen(prevVal => !prevVal)}>
+                    <img src={menuIcon} alt="Menu" />
+                </div>
+            </div>
             <div className={style.info}>
                 <div className={style.infoItem}>
                     {showList.count} items

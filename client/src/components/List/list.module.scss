@@ -12,6 +12,9 @@
         border-top-right-radius: 8px;
         padding: 5px 10px 5px 0;
         margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
         .text {
             display: inline-block;
@@ -23,6 +26,16 @@
             border-top-right-radius: 6px;
             background-color: #fff;
             padding: 4px 8px 4px 4px;
+        }
+
+        .menuBtn {
+            display: none;
+            width: 30px;
+
+            img {
+                width: 30px;
+                height: 30px;
+            }
         }
     }
 
@@ -173,6 +186,28 @@
             padding: 10px 15px;
             font-size: 19px;
             font-family: inherit;
+        }
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .list {
+        .title {
+            .text {
+                font-size: 28px;
+            }
+
+            .menuBtn {
+                display: block;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 656px) {
+    .list {
+        .description {
+            width: 100%;
         }
     }
 }

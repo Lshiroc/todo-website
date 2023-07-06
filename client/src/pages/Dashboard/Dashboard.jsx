@@ -6,6 +6,7 @@ import Details from '../../components/Details/Details';
 
 import moreIcon from './../../assets/icons/more.svg';
 import editIcon from './../../assets/icons/edit2.svg';
+import menuIcon from './../../assets/icons/menuBlack.svg';
 
 export default function Dashboard() {
     const [data, setData] = useState([]);
@@ -17,6 +18,7 @@ export default function Dashboard() {
     const [isEditing, setIsEditing] = useState(false);
     const [pageOpen, setPageOpen] = useState('');
     const [moreSection, setMoreSection] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
     const listCount = Number(localStorage.getItem('listCount')) || 3;
     const listPreviewArr = Array(listCount).fill("1");
@@ -317,7 +319,7 @@ export default function Dashboard() {
     return (
         <>
             <main className={style.main}>
-                <nav className={style.navbar}>
+                <nav className={`${style.navbar} ${isMenuOpen && style.open}`}>
                     <div className={style.lists}>
                         <div className={style.userSection}>
                             <div className={style.profile}></div>
@@ -398,9 +400,12 @@ export default function Dashboard() {
                         <Details showList={showList} setPageOpen={setPageOpen} />
                     ) : 
                     showList.slug ? (
-                        <List setContextMenu={setContextMenu} setPageOpen={setPageOpen} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
+                        <List setIsMenuOpen={setIsMenuOpen} setContextMenu={setContextMenu} setPageOpen={setPageOpen} setColorPicker={setColorPicker} colorPicker={colorPicker} fetchHeads={fetchHeads} setSlowCollectedData={setSlowCollectedData} slowCollectedData={slowCollectedData} setCurrentItem={setCurrentItem} currentItem={currentItem} data={data} showList={showList} setShowList={setShowList} setIsEditing={setIsEditing} isEditing={isEditing} setDndDisable={setDndDisable} dndDisable={dndDisable} />
                     ) : (
                         <div className={style.blank}>
+                            <div className={style.menuBtn} onClick={() => setIsMenuOpen(prevVal => !prevVal)}>
+                                <img src={menuIcon} alt="Menu" />
+                            </div>
                             <div className={style.text}>Not displaying a List</div>
                         </div>
                     )}
