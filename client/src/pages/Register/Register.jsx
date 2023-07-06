@@ -37,7 +37,7 @@ export default function Register() {
 
         let loginData;
 
-        loginData = await fetch(`${process.env.VITE_BACKEND_URL}/users/register`, requestBody)
+        loginData = await fetch(`https://todo-website-backend.vercel.app/users/register`, requestBody)
             .then(resp => resp.json())
             .then(data => data)
             .catch(err => setError("*Information is wrong"));

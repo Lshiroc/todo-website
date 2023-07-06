@@ -77,7 +77,7 @@ export default function List({setIsMenuOpen, setContextMenu, setColorPicker, fet
             }
 
             // Sending request
-            fetch(`${process.env.VITE_BACKEND_URL}/todos/${showList.slug}`, saveBody)
+            fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, saveBody)
                 .then(resp => resp.json())
                 .then(data => console.log(data))
                 .catch(err => console.error(err));
@@ -128,7 +128,7 @@ export default function List({setIsMenuOpen, setContextMenu, setColorPicker, fet
             })
         }
 
-        fetch(`${process.env.VITE_BACKEND_URL}/todos/${showList.slug}`, newBody)
+        fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
             .then(data => fetchHeads())
             .catch(err => console.error(err));
@@ -156,7 +156,7 @@ export default function List({setIsMenuOpen, setContextMenu, setColorPicker, fet
             })
         }
 
-        fetch(`${process.env.VITE_BACKEND_URL}/todos/${showList.slug}`, newBody)
+        fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
             .then(data => fetchHeads())
             .catch(err => console.error(err));

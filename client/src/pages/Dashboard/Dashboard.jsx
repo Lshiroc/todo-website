@@ -46,7 +46,7 @@ export default function Dashboard() {
                 }
             }
 
-            fetch(`${process.env.VITE_BACKEND_URL}/todos/${listSlug}`, request)
+            fetch(`https://todo-website-backend.vercel.app/todos/${listSlug}`, request)
                 .then(resp => resp.json())
                 .then(data => {
                     setShowList(data[0]);
@@ -71,7 +71,7 @@ export default function Dashboard() {
             }
         }
 
-        fetch(`${process.env.VITE_BACKEND_URL}/todos/${listSlug}`, newBody)
+        fetch(`https://todo-website-backend.vercel.app/todos/${listSlug}`, newBody)
             .then(resp => resp.json())
             .then(data => fetchHeads())
             .catch(err => console.error(err));
@@ -92,7 +92,7 @@ export default function Dashboard() {
             })
         }
 
-        fetch(`${process.env.VITE_BACKEND_URL}/todos/${list.slug}`, newBody)
+        fetch(`https://todo-website-backend.vercel.app/todos/${list.slug}`, newBody)
             .then(resp => resp.json())
             .then(data => fetchHeads())
             .catch(err => console.error(err));
@@ -117,7 +117,7 @@ export default function Dashboard() {
             }
         }
 
-        fetch(`${process.env.VITE_BACKEND_URL}/todos/heads`, request)
+        fetch(`https://todo-website-backend.vercel.app/todos/heads`, request)
         .then(resp => resp.json())
         .then(data => setData(data))
         .catch(err => console.error(err));
@@ -141,7 +141,7 @@ export default function Dashboard() {
             })
         }
 
-        fetch('${process.env.VITE_BACKEND_URL}/todos/', newBody)
+        fetch('https://todo-website-backend.vercel.app/todos/', newBody)
             .then(resp => resp.json())
             .then(data => fetchHeads())
             .catch(err => console.error(err));
@@ -155,10 +155,10 @@ export default function Dashboard() {
             let tempData = slowCollectedData;
 
             if(!slowCollectedData[fromSlug]) {
-                needToFetch.push(`${process.env.VITE_BACKEND_URL}/todos/${fromSlug}`);
+                needToFetch.push(`https://todo-website-backend.vercel.app/todos/${fromSlug}`);
             }
             if(!slowCollectedData[toSlug]) {
-                needToFetch.push(`${process.env.VITE_BACKEND_URL}/todos/${toSlug}`);
+                needToFetch.push(`https://todo-website-backend.vercel.app/todos/${toSlug}`);
             }
 
             try {
@@ -210,7 +210,7 @@ export default function Dashboard() {
             setShowList(newData[toSlug]);
             setSlowCollectedData(newData);
 
-            fetch(`${process.env.VITE_BACKEND_URL}/todos/${toSlug}`, newBody)
+            fetch(`https://todo-website-backend.vercel.app/todos/${toSlug}`, newBody)
                 .then(resp => resp.json())
                 .then(data => console.log(data))
                 .catch(err => console.error(err));
@@ -237,7 +237,7 @@ export default function Dashboard() {
 
         let loginData;
 
-        loginData = await fetch(`${process.env.VITE_BACKEND_URL}/users/verifytoken`, requestBody)
+        loginData = await fetch(`https://todo-website-backend.vercel.app/users/verifytoken`, requestBody)
             .then(resp => resp.json())
             .then(data => data)
             .catch(err => console.error(err));
