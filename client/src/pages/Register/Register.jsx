@@ -37,10 +37,11 @@ export default function Register() {
 
         let loginData;
 
-        loginData = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/register`, requestBody)
+        loginData = await fetch(`${process.env.VITE_BACKEND_URL}/users/register`, requestBody)
             .then(resp => resp.json())
             .then(data => data)
             .catch(err => setError("*Information is wrong"));
+        console.log(loginData)
         if(loginData.userID) {
             navigate('/login', { replace: true });
         }
