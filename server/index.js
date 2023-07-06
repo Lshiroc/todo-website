@@ -11,12 +11,12 @@ db.on("error", (err) => console.error(err));
 app.use(express.json());
 
 const todosRouter = require('./routes/todos');
-app.use(cors());
 app.use('/todos', todosRouter);
+app.use(cors());
 
 const usersRouter = require('./routes/users');
-app.use(cors());
 app.use('/users', usersRouter);
+app.use(cors());
 
 const loginRouter = require('./routes/login');
 app.use('/login', loginRouter);
