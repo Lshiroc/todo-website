@@ -121,8 +121,9 @@ export default function Dashboard() {
         fetch(`https://todo-website-backend.vercel.app/todos/heads`, request)
         .then(resp => resp.json())
         .then(data => {
-            setData(data)
+            setData(data);
             let temp = slowCollectedData;
+            console.log("lol", data)
             data.map(item => {
                 temp[item.slug] = item;
             })
