@@ -29,6 +29,13 @@
             background-position: center;
         }
 
+        .item.closeBtn {
+            display: none;
+            img {
+                width: 30px;
+            }
+        } 
+
         .item {
             -webkit-user-drag: none;
             -webkit-user-select: none;
@@ -705,5 +712,13 @@
 
     .navbar {
         width: 100%;
+    }
+
+    .lists .userSection {
+        grid-template-columns: auto 30px 30px;
+
+        .item.closeBtn {
+            display: block;
+        }
     }
 }

@@ -41,7 +41,6 @@ export default function Register() {
             .then(resp => resp.json())
             .then(data => data)
             .catch(err => setError("*Information is wrong"));
-        console.log(loginData)
         if(loginData.userID) {
             navigate('/login', { replace: true });
         }

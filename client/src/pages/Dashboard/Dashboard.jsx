@@ -7,6 +7,7 @@ import Details from '../../components/Details/Details';
 import moreIcon from './../../assets/icons/more.svg';
 import editIcon from './../../assets/icons/edit2.svg';
 import menuIcon from './../../assets/icons/menuBlack.svg';
+import closeIcon from './../../assets/icons/close.svg';
 
 export default function Dashboard() {
     const [data, setData] = useState([]);
@@ -329,6 +330,9 @@ export default function Dashboard() {
                                     <div className={style.option} onClick={() => logOut()}>Log out</div>
                                 </div>
                             </div>
+                            <div className={`${style.item} ${style.closeBtn}`} onClick={() => setIsMenuOpen(false)}>
+                                <img src={closeIcon} alt="Close" />
+                            </div>
                         </div>
                         
                         {/* Lists */}
@@ -363,9 +367,9 @@ export default function Dashboard() {
                                         </div>
                                     </div>
                                     :
-                                    <div key={index} slug={list.slug} onClick={() => {fetchList(list.slug); setPageOpen('')}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={`${style.list} ${showList.slug == list.slug && style.current}`}>
+                                    <div key={index} slug={list.slug} onClick={() => {setPageOpen(''); fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={`${style.list} ${showList.slug == list.slug && style.current}`}>
                                         <div slug={list.slug} className={style.color} style={{backgroundColor: list.color}}>{list.count}</div>
-                                        <div slug={list.slug} className={style.head}>{list.head}</div>
+                                        <div slug={list.slug} className={style.head}>{slowCollectedData[list.slug].head}</div>
                                         <div slug={list.slug} className={style.description}>{list.description}</div>
                                     </div>                                    
                                 )) : listPreviewArr.map((item, index) => (
