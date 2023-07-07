@@ -254,12 +254,12 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
                     <div className={style.option} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: props.slug, open: false, operation: "edit"})}}>Edit</div>
                     <div className={style.option} onClick={() => {navigator.clipboard.writeText(props.text); setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}}>Copy</div>
                     <div className={`${style.option} ${style.deleteOption}`} onClick={() => deleteItem(props.slug)}>Delete</div>
-                    <div className={`${style.option} ${style.openable}`} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}}>
+                    <div className={`${style.option} ${style.openable}`}>
                         <p>Move to</p>
                         <div className={`${style.innerSelection} ${!contextMenu.x ? style.leftVersion : window.innerWidth - 300 - contextMenu.x <= 400 && style.leftVersion}`}>
                             {
                                 allData.map((list, index) => (
-                                    list.slug !== listSlug && <div key={index} className={style.option} onClick={() => {moveItem(list.slug)}}>{list.head}</div>
+                                    list.slug !== listSlug && <div key={index} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}} className={style.option} onClick={() => {moveItem(list.slug)}}>{list.head}</div>
                                 ))
                             }
                         </div>
