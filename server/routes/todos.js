@@ -38,9 +38,8 @@ router.post('/:slug', authenticateToken, getList, async (req, res) => {
 
 // Creating new list
 router.post('/', authenticateToken, async (req, res) => {
-    const listSlug = await createSlug(8);
     const list = new List({
-        slug: listSlug,
+        slug: req.body.slug,
         head: req.body.head,
         description: req.body.description,
         list: req.body.list,
@@ -50,7 +49,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const statistic = new currListStatistics({
         userID: req.body.userID,
-        slug: listSlug,
+        slug: req.body.slug,
         done: req.body.done,
         pending: req.body.pending,
         undone: req.body.undone,

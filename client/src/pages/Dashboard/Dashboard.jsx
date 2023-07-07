@@ -35,7 +35,7 @@ export default function Dashboard() {
     // Fetch List when demanded
     const fetchList = (listSlug) => {
         console.log("fetcching", listSlug)
-        if(Object.hasOwn(slowCollectedData, listSlug)) {
+        if(Object.hasOwn(slowCollectedData, listSlug) && slowCollectedData[listSlug].creationDate) {
             console.log("cached", slowCollectedData[listSlug]);
             setShowList(slowCollectedData[listSlug]);
         } else {
@@ -72,9 +72,16 @@ export default function Dashboard() {
             }
         }
 
+        let tempData = data.filter(list => list.slug !== listSlug);
+        setData(tempData);
+
+        let temp = slowCollectedData;
+        delete temp[listSlug];
+        setSlowCollectedData({...temp});
+
         fetch(`https://todo-website-backend.vercel.app/todos/${listSlug}`, newBody)
             .then(resp => resp.json())
-            .then(data => fetchHeads())
+            .then(data => {})
             .catch(err => console.error(err));
     }
 
@@ -95,14 +102,21 @@ export default function Dashboard() {
 
         fetch(`https://todo-website-backend.vercel.app/todos/${list.slug}`, newBody)
             .then(resp => resp.json())
-            .then(data => fetchHeads())
+            .then(data => {})
             .catch(err => console.error(err));
 
         if(slowCollectedData[list.slug]) {
             let newData = {...slowCollectedData};
             newData[list.slug] = {...newData[list.slug], ...JSON.parse(newBody.body)};
-            console.log("list title updated", newData)
             setSlowCollectedData(newData);
+
+            let tempData = data;
+            tempData.map(item => {
+                if(item.slug == list.slug) {
+                    item = {...item, ...JSON.parse(newBody.body)};
+                }
+            })
+            setData([...tempData]);
         }
         setContextMenu({x: null, y: null, slug: "", element: "", open: false, operation: null});
         setColorPicker({open: false, color: ""});
@@ -126,10 +140,29 @@ export default function Dashboard() {
             console.log("lol", data)
             data.map(item => {
                 temp[item.slug] = item;
+                if(!item.list) {
+                    temp[item.slug].list = [];
+                }
             })
             setSlowCollectedData({...temp});
         })
         .catch(err => console.error(err));
+    }
+
+    // Function for creating unique slug
+    function createSlug(n) {
+        const chars = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, "q", "Q", "w", "W", "e", "E", "r", "R", "t", "T", "y", "Y", "u", "U", "i", "I", "o", "O", "p", "P", "a", "A", "s", "S", "d", "D", "f", "F", "g", "G", "h", "H", "j", "J", "k", "K", "l", "L", "z", 'Z', "x", "X", "c", "C", "v", "V", "b", "B", "n", "N", "m", "M"];
+        let newSlug = "";
+        for(let i = 0; i < n; i++) {
+            newSlug += chars[Math.floor((chars.length - 1)*Math.random(1, chars.length))];
+        }
+
+        let checkList = showList.list.filter(slug => newSlug == slug);
+        if(checkList.length == 0) {
+            return newSlug;
+        }
+        
+        return createSlug(n);
     }
 
     // Create new list
@@ -141,6 +174,7 @@ export default function Dashboard() {
                 "authorization": localStorage.getItem('token')
             },
             body: JSON.stringify({
+                slug: createSlug(8),
                 head: "New List",
                 description: "description for list",
                 list: [],
@@ -150,9 +184,16 @@ export default function Dashboard() {
             })
         }
 
+        let temp = slowCollectedData;
+        temp[JSON.parse(newBody.body).slug] = JSON.parse(newBody.body);
+        setSlowCollectedData({...temp});
+        setData([...data, {...JSON.parse(newBody.body)}])
+        console.log("hmm", data)
+        console.log("log", JSON.parse(newBody.body))
+
         fetch('https://todo-website-backend.vercel.app/todos/', newBody)
             .then(resp => resp.json())
-            .then(data => fetchHeads())
+            .then(data => {})
             .catch(err => console.error(err));
     }
 
@@ -349,10 +390,10 @@ export default function Dashboard() {
                                 data[0]?.head ? data.map((list, index) => (
                                     contextMenu.slug == list.slug && contextMenu.element == "list" && contextMenu.operation == "edit" ?
                                     <div key={index} className={style.editing}>
-                                        <div className={style.color} style={{backgroundColor: colorPicker.color == "" ? list.color : colorPicker.color}} onClick={() => setColorPicker({...colorPicker, open: !colorPicker.open})}>
+                                        <div className={style.color} style={{backgroundColor: colorPicker.color == "" ? slowCollectedData[list.slug].color : colorPicker.color}} onClick={() => setColorPicker({...colorPicker, open: !colorPicker.open})}>
                                             <img src={editIcon} alt="Edit color" />
                                         </div>
-                                        <input className={style.editInput} defaultValue={list.head} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedList(e, list, list.color);}} />
+                                        <input className={style.editInput} defaultValue={slowCollectedData[list.slug].head} onClick={(e) => e.stopPropagation()} onKeyDown={(e) => {e.key == "Enter" && saveEditedList(e, slowCollectedData[list.slug], slowCollectedData[list.slug].color);}} />
                                         <div className={style.description}>{list.description}</div>
                                         <div className={`${style.colorpicker} ${colorPicker.open && style.open}`}>
                                             <div className={`${style.theme} ${style.red}`} onClick={() => {setColorPicker({open: false, color: "#ef4444"})}}></div>
@@ -376,9 +417,9 @@ export default function Dashboard() {
                                     </div>
                                     :
                                     <div key={index} slug={list.slug} onClick={() => {setPageOpen(''); fetchList(list.slug)}} onContextMenu={(e) => {e.preventDefault(); setContextMenu({x: e.pageX, y: e.pageY, slug: list.slug, open: true, operation: null})}} className={`${style.list} ${showList.slug == list.slug && style.current}`}>
-                                        <div slug={list.slug} className={style.color} style={{backgroundColor: list.color}}>{list.count}</div>
+                                        <div slug={list.slug} className={style.color} style={{backgroundColor: slowCollectedData[list.slug].color}}>{slowCollectedData[list.slug].count}</div>
                                         <div slug={list.slug} className={style.head}>{slowCollectedData[list.slug].head}</div>
-                                        <div slug={list.slug} className={style.description}>{list.description}</div>
+                                        <div slug={list.slug} className={style.description}>{slowCollectedData[list.slug].description}</div>
                                     </div>                                    
                                 )) : listPreviewArr.map((item, index) => (
                                         <div key={index} className={style.loadingItem}>

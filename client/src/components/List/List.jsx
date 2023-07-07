@@ -23,6 +23,7 @@ import {
 
 export default function List({setIsMenuOpen, setContextMenu, setColorPicker, fetchHeads, setSlowCollectedData, slowCollectedData, currentItem, setCurrentItem, data, setShowList, showList, setDndDisable, dndDisable, setIsEditing, isEditing}) {
 
+    console.log(showList);
     // Settings to make DND-kit clickable
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -130,7 +131,7 @@ export default function List({setIsMenuOpen, setContextMenu, setColorPicker, fet
 
         fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
-            .then(data => fetchHeads())
+            .then(data => {})
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};
@@ -158,7 +159,7 @@ export default function List({setIsMenuOpen, setContextMenu, setColorPicker, fet
 
         fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
-            .then(data => fetchHeads())
+            .then(data => {})
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};

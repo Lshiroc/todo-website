@@ -99,7 +99,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
 
         fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
-            .then(data => fetchHeads())
+            .then(data => {})
             .catch(err => console.error(err));
 
         let newData = {...slowCollectedData};
