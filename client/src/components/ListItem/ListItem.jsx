@@ -259,7 +259,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
                         <div className={`${style.innerSelection} ${!contextMenu.x ? style.leftVersion : window.innerWidth - 300 - contextMenu.x <= 400 && style.leftVersion}`}>
                             {
                                 allData.map((list, index) => (
-                                    list.slug !== listSlug && <div key={index} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null})}} className={style.option} onClick={() => {moveItem(list.slug)}}>{list.head}</div>
+                                    list.slug !== listSlug && <div key={index} onClick={() => {setCurrentItem({ slug: "", open: false }); setContextMenu({x: null, y: null, slug: "", open: false, operation: null}); moveItem(list.slug)}} className={style.option}>{list.head}</div>
                                 ))
                             }
                         </div>

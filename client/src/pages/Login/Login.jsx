@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet';
 import { useNavigate, Link } from 'react-router-dom';
 import style from './login.module.scss';
 
@@ -46,6 +47,9 @@ export default function Login() {
 
     return (
         <>
+        <Helmet>
+            <title>Login - Doin' It</title>
+        </Helmet>
             <main className={style.main}>
                 <h1 className={style.title}>Login</h1>
                 <div className={style.content}>

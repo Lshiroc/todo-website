@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import style from './home.module.scss';
 import done from './../../assets/icons/done.svg';
 import cross from './../../assets/icons/cross.svg';
@@ -35,6 +36,9 @@ export default function Home() {
 
     return (
         <>
+            <Helmet>
+                <title>Doin' It</title>
+            </Helmet>
             <nav className={style.navbar}>
                 <div className={style.container}>
                     <div className={style.logo}>Doin' It!</div>

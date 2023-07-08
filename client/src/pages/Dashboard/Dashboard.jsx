@@ -1,6 +1,7 @@
 import style from './dashboard.module.scss';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import List from '../../components/List/List';
 import Details from '../../components/Details/Details';
 
@@ -368,6 +369,9 @@ export default function Dashboard() {
 
     return (
         <>
+            <Helmet>
+                <title>Dashboard</title>
+            </Helmet>
             <main className={style.main}>
                 <nav className={`${style.navbar} ${isMenuOpen && style.open}`}>
                     <div className={style.lists}>

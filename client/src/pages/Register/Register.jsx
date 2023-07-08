@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet';
 import { useNavigate, Link } from 'react-router-dom';
 import validator from 'validator';
 import style from './register.module.scss';
@@ -52,6 +53,9 @@ export default function Register() {
 
     return (
         <>
+        <Helmet>
+            <title>Register - Doin' It</title>
+        </Helmet>
             <main className={style.main}>
                 <h1 className={style.title}>Register</h1>
                 <div className={style.content}>
