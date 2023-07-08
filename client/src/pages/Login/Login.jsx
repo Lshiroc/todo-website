@@ -30,7 +30,7 @@ export default function Login() {
 
         let loginData;
 
-        loginData = await fetch(`https://todo-website-backend.vercel.app/users/login`, requestBody)
+        loginData = await fetch(`http://127.0.0.1:8000/users/login`, requestBody)
             .then(resp => resp.json())
             .then(data => data)
             .catch(err => setError("*Information is wrong"));

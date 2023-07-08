@@ -66,7 +66,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
             })
         }
         
-        fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
+        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
             .then(data => console.log(data))
             .catch(err => console.error(err));
@@ -97,7 +97,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
             })
         }
 
-        fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
+        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
             .then(data => {})
             .catch(err => console.error(err));
@@ -151,7 +151,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
             })
         }
 
-        fetch(`https://todo-website-backend.vercel.app/todos/${showList.slug}`, newBody)
+        fetch(`http://127.0.0.1:8000/todos/${showList.slug}`, newBody)
             .then(resp => resp.json())
             .then(newdata => console.log(newdata))
             .catch(err => console.error(err));
@@ -171,7 +171,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
                 'authorization': localStorage.getItem('token')
             }
         }
-        const resp = await fetch(`https://todo-website-backend.vercel.app/todos/${list}`, request);
+        const resp = await fetch(`http://127.0.0.1:8000/todos/${list}`, request);
         const listBody = await resp.json();
 
         let tempItem = props;
@@ -197,7 +197,7 @@ export default function ListItem({props, allData, fetchHeads, listSlug, setSlowC
         newData[list] = JSON.parse(newBody.body);
         setSlowCollectedData(newData);
 
-        fetch(`https://todo-website-backend.vercel.app/todos/${list}`, newBody)
+        fetch(`http://127.0.0.1:8000/todos/${list}`, newBody)
             .then(resp => resp.json())
             .then(data => console.log(data))
             .catch(err => console.error(err));

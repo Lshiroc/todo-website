@@ -48,7 +48,7 @@ export default function Dashboard() {
                 }
             }
 
-            fetch(`https://todo-website-backend.vercel.app/todos/${listSlug}`, request)
+            fetch(`http://127.0.0.1:8000/todos/${listSlug}`, request)
                 .then(resp => resp.json())
                 .then(data => {
                     setShowList(data[0]);
@@ -80,7 +80,7 @@ export default function Dashboard() {
         delete temp[listSlug];
         setSlowCollectedData({...temp});
 
-        fetch(`https://todo-website-backend.vercel.app/todos/${listSlug}`, newBody)
+        fetch(`http://127.0.0.1:8000/todos/${listSlug}`, newBody)
             .then(resp => resp.json())
             .then(data => {})
             .catch(err => console.error(err));
@@ -101,7 +101,7 @@ export default function Dashboard() {
             })
         }
 
-        fetch(`https://todo-website-backend.vercel.app/todos/${list.slug}`, newBody)
+        fetch(`http://127.0.0.1:8000/todos/${list.slug}`, newBody)
             .then(resp => resp.json())
             .then(data => {})
             .catch(err => console.error(err));
@@ -133,7 +133,7 @@ export default function Dashboard() {
             }
         }
 
-        fetch(`https://todo-website-backend.vercel.app/todos/heads`, request)
+        fetch(`http://127.0.0.1:8000/todos/heads`, request)
         .then(resp => resp.json())
         .then(data => {
             setData(data);
@@ -192,7 +192,7 @@ export default function Dashboard() {
         console.log("hmm", data)
         console.log("log", JSON.parse(newBody.body))
 
-        fetch('https://todo-website-backend.vercel.app/todos/', newBody)
+        fetch('http://127.0.0.1:8000/todos/', newBody)
             .then(resp => resp.json())
             .then(data => {})
             .catch(err => console.error(err));
@@ -206,10 +206,10 @@ export default function Dashboard() {
             let tempData = slowCollectedData;
 
             if(!slowCollectedData[fromSlug]) {
-                needToFetch.push(`https://todo-website-backend.vercel.app/todos/${fromSlug}`);
+                needToFetch.push(`http://127.0.0.1:8000/todos/${fromSlug}`);
             }
             if(!slowCollectedData[toSlug]) {
-                needToFetch.push(`https://todo-website-backend.vercel.app/todos/${toSlug}`);
+                needToFetch.push(`http://127.0.0.1:8000/todos/${toSlug}`);
             }
 
             try {
@@ -261,7 +261,7 @@ export default function Dashboard() {
             setShowList(newData[toSlug]);
             setSlowCollectedData(newData);
 
-            fetch(`https://todo-website-backend.vercel.app/todos/${toSlug}`, newBody)
+            fetch(`http://127.0.0.1:8000/todos/${toSlug}`, newBody)
                 .then(resp => resp.json())
                 .then(data => console.log(data))
                 .catch(err => console.error(err));
@@ -288,7 +288,7 @@ export default function Dashboard() {
 
         let loginData;
 
-        loginData = await fetch(`https://todo-website-backend.vercel.app/users/verifytoken`, requestBody)
+        loginData = await fetch(`http://127.0.0.1:8000/users/verifytoken`, requestBody)
             .then(resp => resp.json())
             .then(data => data)
             .catch(err => console.error(err));
